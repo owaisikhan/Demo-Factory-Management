@@ -7,6 +7,7 @@ import { saveItem, quickAddUnit } from "@/app/_lib/actions";
 import FormMessage from "@/app/_components/ui/FormMessage";
 import SubmitButton from "@/app/_components/ui/SubmitButton";
 import Spinner from "@/app/_components/ui/Spinner";
+import { formatThickness } from "@/app/_lib/item-fields";
 
 function Field({ label, htmlFor, required, hint, children }) {
   return (
@@ -21,9 +22,15 @@ function Field({ label, htmlFor, required, hint, children }) {
   );
 }
 
-// Add or edit a raw material or a product. Which fields show depends on the
-// kind: products get size, micron, colour and rolls per carton up front.
-export default function ItemForm({ kind, item, lookups, listHref }) {
+// Add or edit a raw material or a product. Size, thickness, colour/type and
+// pack count show only when this client uses them, under the client's own
+// names (Settings > Item fields). A switched-off field keeps any value the
+// item already has, so turning a field off never wipes data.
+function Kept({ name, value }) {
+  return value === null || value === undefined || value === "" ? null : <input type="hidden" name={name} value={value} />;
+}
+
+export default function ItemForm({ kind, item, lookups, fields, listHref }) {
   const router = useRouter();
   const [state, formAction] = useActionState(saveItem, null);
   const [units, setUnits] = useState(lookups.units);
@@ -68,7 +75,7 @@ export default function ItemForm({ kind, item, lookups, listHref }) {
                 name="name"
                 defaultValue={item?.name}
                 required
-                placeholder={isProduct ? "e.g. Tape 46mm x 72yd 40 mic Clear" : "e.g. Jumbo Roll 40 micron Clear"}
+                placeholder={isProduct ? "e.g. the name your customers use" : "e.g. the name on the supplier's bill"}
                 className="form-input"
               />
             </Field>
@@ -86,7 +93,7 @@ export default function ItemForm({ kind, item, lookups, listHref }) {
           </Field>
 
           <Field label="Code" htmlFor="code" hint="Optional short code, unique per item.">
-            <input id="code" name="code" defaultValue={item?.code ?? ""} placeholder="e.g. T46-72-40C" className="form-input" />
+            <input id="code" name="code" defaultValue={item?.code ?? ""} placeholder="e.g. P-001" className="form-input" />
           </Field>
 
           <Field label="Counted in (unit)" htmlFor="unit_id" required>
@@ -139,9 +146,10 @@ export default function ItemForm({ kind, item, lookups, listHref }) {
             </div>
           ) : null}
 
-          <Field label="Size" htmlFor="size_id" hint={isProduct ? null : "Leave empty if size does not apply."}>
+          {fields.size.enabled ? (
+          <Field label={fields.size.label} htmlFor="size_id" hint={isProduct ? null : `Leave empty if ${fields.size.label.toLowerCase()} does not apply.`}>
             <select id="size_id" name="size_id" defaultValue={item?.size_id ?? ""} className="form-select">
-              <option value="">No size</option>
+              <option value="">None</option>
               {lookups.sizes.filter((s) => s.active || s.id === item?.size_id).map((s) => (
                 <option key={s.id} value={s.id}>
                   {s.label}
@@ -149,19 +157,27 @@ export default function ItemForm({ kind, item, lookups, listHref }) {
               ))}
             </select>
           </Field>
+          ) : (
+            <Kept name="size_id" value={item?.size_id} />
+          )}
 
-          <Field label="Micron" htmlFor="micron_id">
+          {fields.micron.enabled ? (
+          <Field label={fields.micron.label} htmlFor="micron_id">
             <select id="micron_id" name="micron_id" defaultValue={item?.micron_id ?? ""} className="form-select">
-              <option value="">No micron</option>
+              <option value="">None</option>
               {lookups.microns.filter((m) => m.active || m.id === item?.micron_id).map((m) => (
                 <option key={m.id} value={m.id}>
-                  {Number(m.value)} micron
+                  {formatThickness(m.value, fields)}
                 </option>
               ))}
             </select>
           </Field>
+          ) : (
+            <Kept name="micron_id" value={item?.micron_id} />
+          )}
 
-          <Field label="Color / type" htmlFor="color_id">
+          {fields.color.enabled ? (
+          <Field label={fields.color.label} htmlFor="color_id">
             <select id="color_id" name="color_id" defaultValue={item?.color_id ?? ""} className="form-select">
               <option value="">None</option>
               {lookups.colors.filter((c) => c.active || c.id === item?.color_id).map((c) => (
@@ -171,12 +187,17 @@ export default function ItemForm({ kind, item, lookups, listHref }) {
               ))}
             </select>
           </Field>
+          ) : (
+            <Kept name="color_id" value={item?.color_id} />
+          )}
 
-          {isProduct ? (
-            <Field label="Rolls per carton" htmlFor="rolls_per_carton" hint="For tape cartons. Leave empty for other products.">
+          {isProduct && fields.pack.enabled ? (
+            <Field label={fields.pack.label} htmlFor="rolls_per_carton" hint="Leave empty where it does not apply.">
               <input id="rolls_per_carton" name="rolls_per_carton" inputMode="numeric" defaultValue={item?.rolls_per_carton ?? ""} placeholder="e.g. 72" className="form-input" />
             </Field>
-          ) : null}
+          ) : (
+            <Kept name="rolls_per_carton" value={item?.rolls_per_carton} />
+          )}
 
           <div className="sm:col-span-2">
             <Field label="Notes" htmlFor="notes">

@@ -67,7 +67,7 @@ export default function SupplierForm({ supplier = null, isAdmin, afterSave }) {
         ) : null}
         <div className="sm:col-span-2">
           <Field id="sup-notes" label="Notes">
-            <textarea id="sup-notes" name="notes" rows={3} defaultValue={supplier?.notes} placeholder="e.g. Jumbo rolls, all microns" className="form-input min-h-[90px] resize-y" />
+            <textarea id="sup-notes" name="notes" rows={3} defaultValue={supplier?.notes} placeholder="e.g. What they supply, payment terms" className="form-input min-h-[90px] resize-y" />
           </Field>
         </div>
       </div>

@@ -1,5 +1,9 @@
+-- AM Packaging only. Already run on their live database (2026-10-05).
+-- New clients get their starting lists from an industry template instead
+-- (supabase/templates/, applied by scripts/new-client.mjs).
+--
 -- Starting lists for the live database, from the client's voice notes
--- (docs/PLAN.md). Data only, safe to run more than once: every insert
+-- (clients/am-packaging/PLAN.md). Data only, safe to run more than once: every insert
 -- skips rows that already exist. No stock, prices, recipes, customers or
 -- suppliers; the owner enters those in the app.
 --

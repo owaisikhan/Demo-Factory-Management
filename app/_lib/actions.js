@@ -6,6 +6,7 @@ import { createClient } from "./supabase-server";
 import { createAdminClient } from "./supabase-auth";
 import { can, requirePermission, requireRole, ROLES } from "./helpers";
 import { PERMISSION_KEYS } from "./permissions";
+import { ITEM_FIELD_KEYS } from "./item-fields";
 import { isDemoMode } from "./config";
 
 // Every write lives in this file. Each action returns { ok, message, ...extras }
@@ -39,8 +40,9 @@ function describe(error, fallback) {
   if (!error) return fallback;
   const message = error.message ?? String(error);
   if (message.includes("items_code_key")) return "Another item already uses that code. Pick a different code.";
-  if (message.includes("sizes_width_mm_length_yd_key")) return "That size already exists.";
-  if (message.includes("microns_value_key")) return "That micron already exists.";
+  if (message.includes("sizes_dimensions_key")) return "That size is already in the list.";
+  if (message.includes("microns_value_key")) return "That value is already in the list.";
+  if (message.includes("settings_item_labels_present")) return "Give every item field a name, even the ones switched off.";
   if (message.includes("_name_key")) return "That name is already in the list.";
   if (message.includes("violates foreign key constraint")) {
     return "This is still used by items or entries, so it cannot be deleted. Mark it inactive instead.";
@@ -128,7 +130,7 @@ export async function saveItem(_prev, formData) {
   if (Number.isNaN(low) || (low !== null && low < 0)) return fail("The low-stock level must be zero or more.");
   if (Number.isNaN(rate) || (rate !== null && rate < 0)) return fail("The rate must be zero or more.");
   if (Number.isNaN(rolls) || (rolls !== null && (rolls <= 0 || !Number.isInteger(rolls)))) {
-    return fail("Rolls per carton must be a whole number above zero, or left empty.");
+    return fail("The pack count must be a whole number above zero, or left empty.");
   }
 
   const row = {
@@ -215,8 +217,8 @@ const LOOKUPS = {
   colors: { label: "color/type", fields: ["name"] },
   units: { label: "unit", fields: ["name", "short_name"] },
   item_categories: { label: "category", fields: ["name", "kind"] },
-  sizes: { label: "size", fields: ["width_mm", "length_yd"], numeric: ["width_mm", "length_yd"] },
-  microns: { label: "micron", fields: ["value"], numeric: ["value"] },
+  sizes: { label: "size", fields: ["width_mm", "length_yd", "height_mm"], numeric: ["width_mm", "length_yd", "height_mm"], optional: ["height_mm"] },
+  microns: { label: "value", fields: ["value"], numeric: ["value"] },
 };
 
 export async function saveLookup(_prev, formData) {
@@ -230,6 +232,11 @@ export async function saveLookup(_prev, formData) {
   const id = text(formData, "id");
   const row = {};
   for (const f of spec.fields) {
+    if (spec.optional?.includes(f) && !formData.has(f)) continue;
+    if (spec.optional?.includes(f) && text(formData, f) === "") {
+      row[f] = null;
+      continue;
+    }
     if (spec.numeric?.includes(f)) {
       const n = number(formData, f);
       if (n === null || Number.isNaN(n) || n <= 0) return fail("Enter numbers above zero.");
@@ -323,6 +330,31 @@ export async function saveSettings(_prev, formData) {
   if (error) return fail(describe(error, "Could not save the settings."));
   revalidatePath("/admin", "layout");
   return ok("Settings saved.");
+}
+
+// ---------------------------------------------------------------
+// Settings: item fields (which details items have, and their names)
+// ---------------------------------------------------------------
+export async function saveItemFields(_prev, formData) {
+  const { error: denied } = await guard(ROLES.ADMIN);
+  if (denied) return denied;
+
+  const row = { updated_at: new Date().toISOString() };
+  for (const key of ITEM_FIELD_KEYS) {
+    if (key.endsWith("_enabled")) {
+      row[key] = formData.get(key) === "on";
+    } else {
+      const v = text(formData, key);
+      if (!v && !key.endsWith("_unit")) return fail("Give every item field a name, even the ones switched off.");
+      row[key] = v;
+    }
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.from("settings").update(row).eq("id", 1);
+  if (error) return fail(describe(error, "Could not save the item fields."));
+  revalidatePath("/admin", "layout");
+  return ok("Item fields saved. Forms and lists now use these names.");
 }
 
 // ---------------------------------------------------------------

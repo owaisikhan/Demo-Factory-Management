@@ -16,8 +16,8 @@ const urduFont = Noto_Nastaliq_Urdu({ weight: ["400", "700"], subsets: ["arabic"
 
 const UI_EN = {
   title: "Guide",
-  subtitleAdmin: "How to use AM Packaging, step by step. You see the worker steps and the admin steps.",
-  subtitleWorker: "How to use AM Packaging, step by step. Tap a topic to jump to it.",
+  subtitleAdmin: "How to use the app, step by step. You see the worker steps and the admin steps.",
+  subtitleWorker: "How to use the app, step by step. Tap a topic to jump to it.",
   crumbHome: "Home",
   jump: "Jump to a topic",
   day: "Your day",

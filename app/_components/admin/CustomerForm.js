@@ -70,7 +70,7 @@ export default function CustomerForm({ customer = null, isAdmin, afterSave }) {
         ) : null}
         <div className="sm:col-span-2">
           <Field id="cus-notes" label="Notes">
-            <textarea id="cus-notes" name="notes" rows={3} defaultValue={customer?.notes} placeholder="e.g. Takes 48mm brown tape monthly" className="form-input min-h-[90px] resize-y" />
+            <textarea id="cus-notes" name="notes" rows={3} defaultValue={customer?.notes} placeholder="e.g. Orders every month, pays by cheque" className="form-input min-h-[90px] resize-y" />
           </Field>
         </div>
       </div>

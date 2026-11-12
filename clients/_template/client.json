@@ -1,0 +1,42 @@
+{
+  "slug": "<folder-name>",
+  "status": "setting up",
+  "template": "general",
+  "company": {
+    "company_name": "<Full legal name, as on invoices>",
+    "short_name": "<Short name for the menu, e.g. Khan Cartons>",
+    "tagline": "",
+    "address": "",
+    "phone": "",
+    "email": "",
+    "ntn": "",
+    "strn": "",
+    "logo_url": "",
+    "gst_enabled": false,
+    "gst_rate": 18,
+    "invoice_prefix": "INV-",
+    "purchase_prefix": "PUR-",
+    "production_prefix": "PRD-",
+    "invoice_terms": "",
+    "invoice_footer": "Thank you for your business."
+  },
+  "firstAdmin": {
+    "full_name": "<Owner's name>",
+    "email": "<owner@example.pk>"
+  },
+  "supabase": {
+    "projectRef": "",
+    "region": "ap-south-1 (Mumbai)"
+  },
+  "vercel": {
+    "project": "",
+    "url": ""
+  },
+  "migrationsApplied": "none",
+  "plan": {
+    "setupFee": "",
+    "monthly": "",
+    "billingDay": "",
+    "startedOn": ""
+  }
+}

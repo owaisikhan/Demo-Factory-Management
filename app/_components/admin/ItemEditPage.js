@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, History } from "lucide-react";
-import { getItem, getLookups } from "@/app/_lib/data-service";
+import { getItem, getItemFields, getLookups } from "@/app/_lib/data-service";
 import { requirePageRole, ROLES } from "@/app/_lib/helpers";
 import PageHeader from "@/app/_components/layout/PageHeader";
 import ItemForm from "./ItemForm";
@@ -14,7 +14,7 @@ export default async function ItemEditPage({ kind, id }) {
   const listHref = kind === "raw" ? "/admin/raw-materials" : "/admin/products";
   const listLabel = kind === "raw" ? "Raw Materials" : "Products";
 
-  const [lookups, item] = await Promise.all([getLookups(), id ? getItem(id) : null]);
+  const [lookups, item, fields] = await Promise.all([getLookups(), id ? getItem(id) : null, getItemFields()]);
   if (id && (!item || item.kind !== kind)) notFound();
 
   const title = item ? item.name : kind === "raw" ? "Add Raw Material" : "Add Product";
@@ -39,7 +39,7 @@ export default async function ItemEditPage({ kind, id }) {
           </>
         }
       />
-      <ItemForm kind={kind} item={item} lookups={lookups} listHref={listHref} />
+      <ItemForm kind={kind} item={item} lookups={lookups} fields={fields} listHref={listHref} />
       {item ? <ActiveToggle id={item.id} active={item.active} name={item.name} /> : null}
     </div>
   );

@@ -26,6 +26,7 @@ export const PAGES = [
   "/admin/activity",
   "/admin/users",
   "/admin/settings",
+  "/admin/settings?tab=fields",
   "/admin/settings?tab=categories",
   "/admin/settings?tab=brands",
   "/admin/settings?tab=sizes",

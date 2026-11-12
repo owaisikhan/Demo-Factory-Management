@@ -65,7 +65,7 @@ export default function UserForm({
               name="email"
               type="email"
               required
-              placeholder="e.g. ali@ampackaging.pk"
+              placeholder="e.g. ali@yourcompany.pk"
               className="form-input"
             />
           </div>

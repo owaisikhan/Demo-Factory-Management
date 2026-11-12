@@ -4,19 +4,19 @@
 
 export const demoProfile = {
   id: "demo-admin",
-  full_name: "Ahmed Munir",
+  full_name: "Imran Saeed",
   role: "admin",
   active: true,
   permissions: ["stock_view", "purchases", "production", "sales", "sales_cash", "customers", "suppliers", "balances", "payments", "reports", "void"],
-  email: "admin@ampackaging.pk",
+  email: "admin@demo.pk",
 };
 
 export const demoProfiles = [
-  { id: "demo-admin", full_name: "Ahmed Munir", role: "admin", active: true, permissions: ["stock_view", "purchases", "production", "sales", "sales_cash", "customers", "suppliers", "balances", "payments", "reports", "void"], email: "admin@ampackaging.pk", created_at: "2026-09-01T05:00:00Z" },
-  { id: "demo-admin-2", full_name: "Usman Ahmed", role: "admin", active: true, permissions: ["stock_view", "purchases", "production", "sales", "sales_cash", "customers", "suppliers", "balances", "payments", "reports", "void"], email: "usman@ampackaging.pk", created_at: "2026-09-01T05:10:00Z" },
-  { id: "demo-w1", full_name: "Ali Raza", role: "worker", active: true, permissions: ["stock_view", "purchases", "production", "sales", "sales_cash", "customers", "suppliers"], email: "ali@ampackaging.pk", created_at: "2026-09-02T06:00:00Z" },
-  { id: "demo-w2", full_name: "Muhammad Bilal Hussain", role: "worker", active: true, permissions: ["stock_view", "production"], email: "bilal@ampackaging.pk", created_at: "2026-09-02T06:05:00Z" },
-  { id: "demo-w3", full_name: "Imran Khan", role: "worker", active: false, permissions: ["stock_view", "purchases", "production", "sales", "sales_cash", "customers", "suppliers"], email: "imran@ampackaging.pk", created_at: "2026-09-03T06:00:00Z" },
+  { id: "demo-admin", full_name: "Imran Saeed", role: "admin", active: true, permissions: ["stock_view", "purchases", "production", "sales", "sales_cash", "customers", "suppliers", "balances", "payments", "reports", "void"], email: "admin@demo.pk", created_at: "2026-09-01T05:00:00Z" },
+  { id: "demo-admin-2", full_name: "Usman Ahmed", role: "admin", active: true, permissions: ["stock_view", "purchases", "production", "sales", "sales_cash", "customers", "suppliers", "balances", "payments", "reports", "void"], email: "usman@demo.pk", created_at: "2026-09-01T05:10:00Z" },
+  { id: "demo-w1", full_name: "Ali Raza", role: "worker", active: true, permissions: ["stock_view", "purchases", "production", "sales", "sales_cash", "customers", "suppliers"], email: "ali@demo.pk", created_at: "2026-09-02T06:00:00Z" },
+  { id: "demo-w2", full_name: "Muhammad Bilal Hussain", role: "worker", active: true, permissions: ["stock_view", "production"], email: "bilal@demo.pk", created_at: "2026-09-02T06:05:00Z" },
+  { id: "demo-w3", full_name: "Imran Khan", role: "worker", active: false, permissions: ["stock_view", "purchases", "production", "sales", "sales_cash", "customers", "suppliers"], email: "imran@demo.pk", created_at: "2026-09-03T06:00:00Z" },
 ];
 
 export const demoCategories = [
@@ -47,12 +47,12 @@ export const demoBrands = [
 ];
 
 export const demoSizes = [
-  { id: "s-24-72", width_mm: 24, length_yd: 72, label: "24mm x 72yd", active: true },
-  { id: "s-46-72", width_mm: 46, length_yd: 72, label: "46mm x 72yd", active: true },
-  { id: "s-46-70", width_mm: 46, length_yd: 70, label: "46mm x 70yd", active: true },
-  { id: "s-60-72", width_mm: 60, length_yd: 72, label: "60mm x 72yd", active: true },
-  { id: "s-69-72", width_mm: 69, length_yd: 72, label: "69mm x 72yd", active: true },
-  { id: "s-72-72", width_mm: 72, length_yd: 72, label: "72mm x 72yd", active: true },
+  { id: "s-24-72", width_mm: 24, length_yd: 72, label: "24mm x 72yd", height_mm: null, active: true },
+  { id: "s-46-72", width_mm: 46, length_yd: 72, label: "46mm x 72yd", height_mm: null, active: true },
+  { id: "s-46-70", width_mm: 46, length_yd: 70, label: "46mm x 70yd", height_mm: null, active: true },
+  { id: "s-60-72", width_mm: 60, length_yd: 72, label: "60mm x 72yd", height_mm: null, active: true },
+  { id: "s-69-72", width_mm: 69, length_yd: 72, label: "69mm x 72yd", height_mm: null, active: true },
+  { id: "s-72-72", width_mm: 72, length_yd: 72, label: "72mm x 72yd", height_mm: null, active: true },
 ];
 
 export const demoMicrons = [
@@ -102,10 +102,10 @@ export const demoItems = [
 
 export const demoSettings = {
   id: 1,
-  company_name: "Ahmed Munir Packaging Industry",
-  short_name: "AM Packaging",
-  tagline: "Your Trusted Packaging Partner",
-  address: "265-D, Small Industrial Estate, Sargodha Road, Faisalabad",
+  company_name: "Demo Packaging Industries",
+  short_name: "Demo Packaging",
+  tagline: "Sample data for a tape factory",
+  address: "Plot 12, Industrial Estate, Faisalabad",
   phone: "+92 300 0000000",
   email: "",
   ntn: "",
@@ -118,15 +118,34 @@ export const demoSettings = {
   production_prefix: "PRD-",
   invoice_terms: "",
   invoice_footer: "Thank you for your business.",
+  // Item fields (migration 0010), as the packaging-tape template sets them
+  industry_template: "packaging-tape",
+  size_enabled: true,
+  size_label: "Size",
+  size_width_label: "Width",
+  size_width_unit: "mm",
+  size_length_label: "Length",
+  size_length_unit: "yd",
+  size_height_enabled: false,
+  size_height_label: "Height",
+  size_height_unit: "mm",
+  micron_enabled: true,
+  micron_label: "Micron",
+  micron_unit: "micron",
+  color_enabled: true,
+  color_label: "Color / type",
+  pack_enabled: true,
+  pack_label: "Rolls per carton",
+  pack_unit: "rolls/ctn",
 };
 
 export const demoMovements = [
   { id: 9, movement_date: "2026-10-03", qty: 24, type: "production_in", note: "PRD-00012", ref_table: "production_runs", ref_id: "pr-12", created_at: "2026-10-03T07:20:00Z", actor_name: "Ali Raza" },
   { id: 8, movement_date: "2026-10-02", qty: 60, type: "production_in", note: "PRD-00011", ref_table: "production_runs", ref_id: "pr-11", created_at: "2026-10-02T12:05:00Z", actor_name: "Muhammad Bilal Hussain" },
-  { id: 7, movement_date: "2026-10-01", qty: -2, type: "adjustment", note: "Two cartons water damaged", created_at: "2026-10-01T09:00:00Z", actor_name: "Ahmed Munir" },
+  { id: 7, movement_date: "2026-10-01", qty: -2, type: "adjustment", note: "Two cartons water damaged", created_at: "2026-10-01T09:00:00Z", actor_name: "Imran Saeed" },
   { id: 6, movement_date: "2026-09-30", qty: -100, type: "sale", note: "INV-00016", created_at: "2026-09-30T10:00:00Z", actor_name: "Ali Raza" },
   { id: 5, movement_date: "2026-09-29", qty: -40, type: "sale", note: "INV-00015", created_at: "2026-09-29T11:00:00Z", actor_name: "Ali Raza" },
-  { id: 1, movement_date: "2026-09-05", qty: 272, type: "opening", note: "Counted on day one", created_at: "2026-09-05T06:00:00Z", actor_name: "Ahmed Munir" },
+  { id: 1, movement_date: "2026-09-05", qty: 272, type: "opening", note: "Counted on day one", created_at: "2026-09-05T06:00:00Z", actor_name: "Imran Saeed" },
 ];
 
 export const demoActivity = [
@@ -134,11 +153,11 @@ export const demoActivity = [
   { id: 411, created_at: "2026-10-03T07:20:30Z", user_id: "demo-w1", actor_name: "Ali Raza", action: "payment", module: "payment", record_id: "p31", record_label: "Rs 500,000", summary: "Ali Raza recorded a payment of Rs 500,000 received from Faisalabad Traders (Pvt) Ltd", changes: { after: { amount: 500000, method: "bank" } } },
   { id: 410, created_at: "2026-10-03T05:02:00Z", user_id: "demo-w1", actor_name: "Ali Raza", action: "login", module: "session", record_id: "demo-w1", record_label: "Ali Raza", summary: "Ali Raza signed in", changes: null },
   { id: 409, created_at: "2026-10-02T12:05:00Z", user_id: "demo-w2", actor_name: "Muhammad Bilal Hussain", action: "created", module: "production", record_id: "pr-11", record_label: "PRD-00011", summary: "Muhammad Bilal Hussain created production run PRD-00011: 60 x Tape 46mm x 72yd 40 mic Clear", changes: { after: { run_no: "PRD-00011", qty_made: 60, run_date: "2026-10-02" } } },
-  { id: 408, created_at: "2026-10-02T09:40:00Z", user_id: "demo-admin", actor_name: "Ahmed Munir", action: "updated", module: "item", record_id: "i-t-46-72-40c", record_label: "Tape 46mm x 72yd 40 mic Clear", summary: "Ahmed Munir updated item Tape 46mm x 72yd 40 mic Clear", changes: { default_rate: { from: 4650, to: 4800 }, low_stock_level: { from: 40, to: 50 } } },
-  { id: 407, created_at: "2026-10-01T09:00:00Z", user_id: "demo-admin", actor_name: "Ahmed Munir", action: "adjusted", module: "stock", record_id: "7", record_label: "Tape 46mm x 72yd 40 mic Clear (ctn)", summary: "Ahmed Munir adjusted stock of Tape 46mm x 72yd 40 mic Clear (ctn) by -2 (reason: Two cartons water damaged)", changes: { after: { qty: -2, type: "adjustment", note: "Two cartons water damaged" } } },
-  { id: 406, created_at: "2026-09-30T14:30:00Z", user_id: "demo-admin", actor_name: "Ahmed Munir", action: "voided", module: "purchase", record_id: "pu-6", record_label: "PUR-00006", summary: "Ahmed Munir voided purchase PUR-00006 from Pak Box Industries (Pvt) Ltd (Rs 34,400), reason: Entered twice, see PUR-00007", changes: { status: { from: "posted", to: "void" }, void_reason: { from: "", to: "Entered twice, see PUR-00007" } } },
+  { id: 408, created_at: "2026-10-02T09:40:00Z", user_id: "demo-admin", actor_name: "Imran Saeed", action: "updated", module: "item", record_id: "i-t-46-72-40c", record_label: "Tape 46mm x 72yd 40 mic Clear", summary: "Imran Saeed updated item Tape 46mm x 72yd 40 mic Clear", changes: { default_rate: { from: 4650, to: 4800 }, low_stock_level: { from: 40, to: 50 } } },
+  { id: 407, created_at: "2026-10-01T09:00:00Z", user_id: "demo-admin", actor_name: "Imran Saeed", action: "adjusted", module: "stock", record_id: "7", record_label: "Tape 46mm x 72yd 40 mic Clear (ctn)", summary: "Imran Saeed adjusted stock of Tape 46mm x 72yd 40 mic Clear (ctn) by -2 (reason: Two cartons water damaged)", changes: { after: { qty: -2, type: "adjustment", note: "Two cartons water damaged" } } },
+  { id: 406, created_at: "2026-09-30T14:30:00Z", user_id: "demo-admin", actor_name: "Imran Saeed", action: "voided", module: "purchase", record_id: "pu-6", record_label: "PUR-00006", summary: "Imran Saeed voided purchase PUR-00006 from Pak Box Industries (Pvt) Ltd (Rs 34,400), reason: Entered twice, see PUR-00007", changes: { status: { from: "posted", to: "void" }, void_reason: { from: "", to: "Entered twice, see PUR-00007" } } },
   { id: 405, created_at: "2026-09-30T10:00:00Z", user_id: "demo-w1", actor_name: "Ali Raza", action: "created", module: "customer", record_id: "cus-gph", record_label: "Gujranwala Packaging House", summary: "Ali Raza created customer Gujranwala Packaging House", changes: { after: { name: "Gujranwala Packaging House", phone: "0300 1234567", opening_balance: 0 } } },
-  { id: 404, created_at: "2026-09-29T08:15:00Z", user_id: "demo-admin", actor_name: "Ahmed Munir", action: "created", module: "recipe", record_id: "rc1", record_label: "Tape 46mm x 72yd 40 mic Clear", summary: "Ahmed Munir created the recipe for Tape 46mm x 72yd 40 mic Clear (per unit: 1 pcs Carton Box 46mm, 300 m Jumbo Roll 40 micron Clear, 72 pcs Paper Tube 3 inch, 0.15 kg Shrink Film)", changes: { before: [], after: [{ material: "Carton Box 46mm", qty_per_unit: 1 }, { material: "Jumbo Roll 40 micron Clear", qty_per_unit: 300 }] } },
+  { id: 404, created_at: "2026-09-29T08:15:00Z", user_id: "demo-admin", actor_name: "Imran Saeed", action: "created", module: "recipe", record_id: "rc1", record_label: "Tape 46mm x 72yd 40 mic Clear", summary: "Imran Saeed created the recipe for Tape 46mm x 72yd 40 mic Clear (per unit: 1 pcs Carton Box 46mm, 300 m Jumbo Roll 40 micron Clear, 72 pcs Paper Tube 3 inch, 0.15 kg Shrink Film)", changes: { before: [], after: [{ material: "Carton Box 46mm", qty_per_unit: 1 }, { material: "Jumbo Roll 40 micron Clear", qty_per_unit: 300 }] } },
   { id: 403, created_at: "2026-09-28T16:45:00Z", user_id: "demo-admin-2", actor_name: "Usman Ahmed", action: "deleted", module: "settings", record_id: "b-old", record_label: "Local Tubes", summary: "Usman Ahmed deleted brand Local Tubes", changes: { before: { name: "Local Tubes", active: true } } },
   { id: 402, created_at: "2026-09-28T16:40:00Z", user_id: "demo-admin-2", actor_name: "Usman Ahmed", action: "created", module: "user", record_id: "demo-w3", record_label: "Imran Khan", summary: "Usman Ahmed created user Imran Khan as worker", changes: { after: { full_name: "Imran Khan", role: "worker", active: true } } },
   { id: 401, created_at: "2026-09-28T16:00:00Z", user_id: "demo-admin-2", actor_name: "Usman Ahmed", action: "logout", module: "session", record_id: "demo-admin-2", record_label: "Usman Ahmed", summary: "Usman Ahmed signed out", changes: null },
@@ -154,7 +173,7 @@ const round2 = (n) => Math.round(n * 100) / 100;
 export const demoSuppliers = [
   { id: "sup-lfc", name: "Lahore Films Co", contact_person: "Tariq Mehmood", phone: "0300 4412233", address: "Sundar Industrial Estate, Lahore", opening_balance: 0, notes: "Jumbo rolls, all microns", active: true, created_at: "2026-09-05T06:00:00Z" },
   { id: "sup-star", name: "Star Tubes Faisalabad", contact_person: "Naveed Akhtar", phone: "0321 6655441", address: "Jhang Road, Faisalabad", opening_balance: 15000, notes: "", active: true, created_at: "2026-09-05T06:05:00Z" },
-  { id: "sup-pakbox", name: "Pak Box Industries (Pvt) Ltd", contact_person: "Shahid Iqbal", phone: "041 8721100", address: "Small Industrial Estate, Sargodha Road, Faisalabad", opening_balance: 0, notes: "Cartons 46mm and 72mm", active: true, created_at: "2026-09-06T06:00:00Z" },
+  { id: "sup-pakbox", name: "Pak Box Industries (Pvt) Ltd", contact_person: "Shahid Iqbal", phone: "041 8721100", address: "Industrial Estate, Faisalabad", opening_balance: 0, notes: "Cartons 46mm and 72mm", active: true, created_at: "2026-09-06T06:00:00Z" },
   { id: "sup-kpt", name: "Karachi Polymer Traders", contact_person: "", phone: "021 32455667", address: "SITE Area, Karachi", opening_balance: 0, notes: "", active: true, created_at: "2026-09-10T06:00:00Z" },
 ];
 
@@ -330,12 +349,12 @@ const saleSeed = [
 ];
 
 export const demoCustomerPayments = [
-  { id: "cp-1", customer_id: "cus-ftl", sale_id: "sa-14", payment_date: "2026-09-12", amount: 465000, method: "bank", reference: "MCB 55190", note: "", status: "posted", void_reason: "", created_at: "2026-09-12T12:00:00Z", recorded_by: "Ahmed Munir" },
-  { id: "cp-2", customer_id: "cus-ftl", sale_id: null, payment_date: "2026-09-20", amount: 25000, method: "cash", reference: "", note: "Old balance cleared", status: "posted", void_reason: "", created_at: "2026-09-20T12:00:00Z", recorded_by: "Ahmed Munir" },
+  { id: "cp-1", customer_id: "cus-ftl", sale_id: "sa-14", payment_date: "2026-09-12", amount: 465000, method: "bank", reference: "MCB 55190", note: "", status: "posted", void_reason: "", created_at: "2026-09-12T12:00:00Z", recorded_by: "Imran Saeed" },
+  { id: "cp-2", customer_id: "cus-ftl", sale_id: null, payment_date: "2026-09-20", amount: 25000, method: "cash", reference: "", note: "Old balance cleared", status: "posted", void_reason: "", created_at: "2026-09-20T12:00:00Z", recorded_by: "Imran Saeed" },
   { id: "cp-3", customer_id: "cus-ftl", sale_id: "sa-16", payment_date: "2026-10-01", amount: 300000, method: "cheque", reference: "Chq 778812", note: "", status: "posted", void_reason: "", created_at: "2026-10-01T12:00:00Z", recorded_by: "Usman Ahmed" },
   { id: "cp-4", customer_id: "cus-lsm", sale_id: "sa-17", payment_date: "2026-10-01", amount: 90000, method: "cash", reference: "", note: "", status: "posted", void_reason: "", created_at: "2026-10-01T13:00:00Z", recorded_by: "Ali Raza" },
   { id: "cp-5", customer_id: "cus-ftl", sale_id: "sa-18", payment_date: "2026-10-03", amount: 500000, method: "bank", reference: "HBL 99021", note: "", status: "posted", void_reason: "", created_at: "2026-10-03T07:20:30Z", recorded_by: "Ali Raza" },
-  { id: "cp-6", customer_id: "cus-gph", sale_id: "sa-15", payment_date: "2026-09-30", amount: 50000, method: "cheque", reference: "Chq 1020", note: "", status: "void", void_reason: "Cheque bounced", created_at: "2026-09-30T15:00:00Z", recorded_by: "Ahmed Munir" },
+  { id: "cp-6", customer_id: "cus-gph", sale_id: "sa-15", payment_date: "2026-09-30", amount: 50000, method: "cheque", reference: "Chq 1020", note: "", status: "void", void_reason: "Cheque bounced", created_at: "2026-09-30T15:00:00Z", recorded_by: "Imran Saeed" },
 ];
 
 export const demoSaleLines = saleSeed.flatMap((s) =>

@@ -1,12 +1,15 @@
-// Identity as data. The company details printed on invoices come from the
-// settings table (editable in Settings); these are the fallbacks and the
-// values used before the database is connected.
+// The product's own identity. Each client's company name, tagline and
+// invoice details live in their database (Settings > Company & Invoice) and
+// reach the screens through getBranding() in data-service.js. These values
+// are only the fallbacks: before the database answers, and on the parts of
+// the product that are the same for every client.
 export const siteConfig = {
-  appName: "AM Packaging",
-  appTagline: "Inventory Management",
-  fullName: "Ahmed Munir Packaging Industry",
-  tagline: "Your Trusted Packaging Partner",
-  address: "265-D, Small Industrial Estate, Sargodha Road, Faisalabad",
+  productName: "Factory Manager",
+  productTagline: "Factory Management",
+
+  // Shown until a client's own details load
+  fallbackCompanyName: "Your Company Name",
+  fallbackShortName: "Factory Manager",
 
   currencySymbol: "Rs",
   locale: "en-PK",

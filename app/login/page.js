@@ -1,12 +1,13 @@
 import { Package2 } from "lucide-react";
 import { siteConfig } from "@/app/_lib/siteConfig";
 import { isDemoMode } from "@/app/_lib/config";
+import { getBranding } from "@/app/_lib/data-service";
 import LoginForm from "@/app/_components/admin/LoginForm";
 
 export const metadata = { title: "Sign in" };
 
 export default async function LoginPage({ searchParams }) {
-  const { next = "" } = await searchParams;
+  const [{ next = "" }, brand] = await Promise.all([searchParams, getBranding()]);
 
   return (
     <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[linear-gradient(135deg,#f0fbf5_0%,#e8f6f0_45%,#e3eefc_100%)] px-4 py-10 dark:bg-[linear-gradient(135deg,#0f172a_0%,#10231c_100%)]">
@@ -15,8 +16,8 @@ export default async function LoginPage({ searchParams }) {
           <Package2 size={22} aria-hidden />
         </span>
         <span className="flex flex-col border-l border-border pl-3 leading-tight">
-          <span className="text-lg font-bold text-heading">{siteConfig.appName}</span>
-          <span className="text-[11px] font-bold uppercase tracking-[0.1em] text-primary-ink">{siteConfig.appTagline}</span>
+          <span className="text-lg font-bold text-heading">{brand.short_name}</span>
+          <span className="text-[11px] font-bold uppercase tracking-[0.1em] text-primary-ink">{siteConfig.productTagline}</span>
         </span>
       </div>
 
@@ -24,7 +25,7 @@ export default async function LoginPage({ searchParams }) {
         <div className="h-1 bg-[linear-gradient(90deg,#3b82f6,#22b573)]" aria-hidden />
         <div className="px-6 py-9 sm:px-9">
           <h1 className="text-center text-2xl font-bold text-heading">Welcome back!</h1>
-          <p className="mt-2 text-center text-sm text-muted">Sign in to {siteConfig.fullName}.</p>
+          <p className="mt-2 text-center text-sm text-muted">Sign in to {brand.company_name}.</p>
           <LoginForm next={next} demo={isDemoMode} />
           <p className="mt-7 border-t border-border pt-6 text-center text-sm text-muted">
             No account yet, or forgot your password? Ask an admin to set it up for you.

@@ -1,5 +1,9 @@
 import "server-only";
+import { cache } from "react";
+import { unstable_rethrow } from "next/navigation";
 import { createClient } from "./supabase-server";
+import { siteConfig } from "./siteConfig";
+import { itemFields } from "./item-fields";
 import { isDemoMode } from "./config";
 import * as demo from "./demo-data";
 import * as reports from "./demo-reports";
@@ -29,11 +33,46 @@ function demoPage(rows, page, perPage = PAGE_SIZE) {
 // ---------------------------------------------------------------
 // Settings and lookup tables
 // ---------------------------------------------------------------
-export async function getSettings() {
+export const getSettings = cache(async function getSettings() {
   if (isDemoMode) return demo.demoSettings;
   const supabase = await createClient();
   return unwrap(await supabase.from("settings").select("*").eq("id", 1).maybeSingle(), "the company settings");
+});
+
+// The item details this client uses and their names (Settings > Item fields)
+export async function getItemFields() {
+  return itemFields(await getSettings());
 }
+
+// The client's name for the sign-in page, the menu and the page titles.
+// Works before sign-in (app_branding is open to anon, migration 0010) and
+// never throws: a branding hiccup must not take a page down.
+export const getBranding = cache(async function getBranding() {
+  const fallback = {
+    company_name: siteConfig.fallbackCompanyName,
+    short_name: siteConfig.fallbackShortName,
+    tagline: "",
+    logo_url: "",
+  };
+  if (isDemoMode) {
+    const s = demo.demoSettings;
+    return { company_name: s.company_name, short_name: s.short_name, tagline: s.tagline, logo_url: s.logo_url };
+  }
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase.rpc("app_branding");
+    if (error || !data) return fallback;
+    return {
+      company_name: data.company_name || fallback.company_name,
+      short_name: data.short_name || data.company_name || fallback.short_name,
+      tagline: data.tagline || "",
+      logo_url: data.logo_url || "",
+    };
+  } catch (err) {
+    unstable_rethrow(err); // let Next see its own "render per request" signal
+    return fallback;
+  }
+});
 
 export async function getLookups() {
   if (isDemoMode) {
@@ -51,7 +90,7 @@ export async function getLookups() {
     supabase.from("item_categories").select("*").order("kind").order("sort_order").order("name"),
     supabase.from("units").select("*").order("name"),
     supabase.from("brands").select("*").order("name"),
-    supabase.from("sizes").select("*").order("width_mm").order("length_yd"),
+    supabase.from("sizes").select("*").order("width_mm").order("length_yd").order("height_mm", { nullsFirst: true }),
     supabase.from("microns").select("*").order("value"),
     supabase.from("colors").select("*").order("name"),
   ]);

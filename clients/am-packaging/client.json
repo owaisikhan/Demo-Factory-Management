@@ -1,0 +1,43 @@
+{
+  "slug": "am-packaging",
+  "status": "live",
+  "template": "packaging-tape",
+  "company": {
+    "company_name": "Ahmed Munir Packaging Industry",
+    "short_name": "AM Packaging",
+    "tagline": "Your Trusted Packaging Partner",
+    "address": "265-D, Small Industrial Estate, Sargodha Road, Faisalabad",
+    "phone": "",
+    "email": "",
+    "ntn": "",
+    "strn": "",
+    "logo_url": "",
+    "gst_enabled": false,
+    "gst_rate": 18,
+    "invoice_prefix": "INV-",
+    "purchase_prefix": "PUR-",
+    "production_prefix": "PRD-",
+    "invoice_terms": "",
+    "invoice_footer": "Thank you for your business."
+  },
+  "firstAdmin": {
+    "full_name": "Test Admin",
+    "email": "admin@gmail.com"
+  },
+  "supabase": {
+    "projectRef": "cbdpijrrzjvkmyyhyubz",
+    "region": "ap-south-1 (Mumbai)",
+    "retiredProjectRef": "fqvmljwlwfjensumiqws (Singapore, retired: never apply anything to it)"
+  },
+  "vercel": {
+    "project": "",
+    "url": ""
+  },
+  "migrationsApplied": "0009",
+  "plan": {
+    "setupFee": "",
+    "monthly": "",
+    "billingDay": "",
+    "startedOn": "2026-10-05"
+  }
+}

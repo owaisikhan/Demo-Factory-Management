@@ -1,8 +1,8 @@
 -- Rule tests: each "expect" line says what should happen. Run with run.sh.
 \set ON_ERROR_STOP 0
 \pset footer off
-insert into auth.users (id, email) values ('00000000-0000-0000-0000-00000000000a','admin@am'), ('00000000-0000-0000-0000-00000000000b','worker@am');
-insert into profiles (id, full_name, role) values ('00000000-0000-0000-0000-00000000000a','Ahmed Munir','admin'), ('00000000-0000-0000-0000-00000000000b','Ali Raza','worker');
+insert into auth.users (id, email) values ('00000000-0000-0000-0000-00000000000a','admin@demo'), ('00000000-0000-0000-0000-00000000000b','worker@demo');
+insert into profiles (id, full_name, role) values ('00000000-0000-0000-0000-00000000000a','Imran Saeed','admin'), ('00000000-0000-0000-0000-00000000000b','Ali Raza','worker');
 
 -- as worker
 set role authenticated;
@@ -322,3 +322,40 @@ select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-00000000000a'
 update profiles set permissions = '{production,purchases,reports}' where id = '00000000-0000-0000-0000-00000000000c';
 update profiles set active = false where id = '00000000-0000-0000-0000-00000000000c';
 select summary from activity_log where module = 'user' order by created_at desc, id desc limit 2;
+
+-- 0010 product: configurable item fields, size labels, branding
+\echo '--- new database starts with neutral company details (expect Your Company Name | Your Company)'
+select company_name, short_name from settings;
+\echo '--- worker cannot change the item field words (expect RLS error or 0 rows: label still Micron)'
+select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-00000000000b',false);
+update settings set micron_label = 'Gauge' where id = 1;
+select micron_label from settings;
+select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-00000000000a',false);
+\echo '--- size with a height (expect a label built from the Settings units: 40mm x 100yd x 30mm)'
+insert into sizes (width_mm, length_yd, height_mm) values (40, 100, 30);
+select label from sizes where width_mm = 40 and length_yd = 100;
+\echo '--- same three dimensions twice (expect duplicate key error on sizes_dimensions_key)'
+insert into sizes (width_mm, length_yd, height_mm) values (40, 100, 30);
+\echo '--- same width and length without a height is a different size (expect 40mm x 100yd)'
+insert into sizes (width_mm, length_yd) values (40, 100);
+select label from sizes where width_mm = 40 and length_yd = 100 and height_mm is null;
+\echo '--- admin switches units to inches (expect every label rewritten: 46in x 72in, 40in x 100in x 30in; item_stock shows 46in x 72in)'
+select count(*) as size_entries_before from activity_log where record_label like '%x%' and module = 'settings' and summary like '%size%';
+update settings set size_width_unit = 'in', size_length_unit = 'in', size_height_unit = 'in' where id = 1;
+select label from sizes where (width_mm = 46 and length_yd = 72) or (width_mm = 40 and height_mm = 30) order by label;
+select distinct size_label from item_stock where code = 'T-46-72-40C';
+\echo '--- the relabel adds one settings entry, not one per size (expect size_entries_after = size_entries_before, and a settings summary naming the units)'
+select count(*) as size_entries_after from activity_log where record_label like '%x%' and module = 'settings' and summary like '%size%';
+select summary from activity_log where record_label = 'Company & Invoice' order by created_at desc, id desc limit 1;
+\echo '--- an admin editing one size is still logged (expect 1 new entry: updated size)'
+update sizes set width_mm = 41 where width_mm = 40 and height_mm is null;
+select summary from activity_log where module = 'settings' order by created_at desc, id desc limit 1;
+\echo '--- empty field word refused (expect check constraint settings_item_labels_present)'
+update settings set pack_label = '  ' where id = 1;
+\echo '--- branding before sign-in (expect company and short name, no NTN or phone)'
+reset role;
+set role anon;
+select public.app_branding();
+\echo '--- anon cannot read settings directly (expect 0 rows or permission error)'
+select count(*) from settings;
+reset role;

@@ -1,4 +1,4 @@
-// AM Packaging's regression checks: one per bug that looked fine by eye and
+// The product's regression checks: one per bug that looked fine by eye and
 // passed the build, each proven once by putting its bug back and watching it
 // fail. Runs against demo mode (no database env), so nothing is ever saved.
 // Run against a production build:
@@ -26,6 +26,7 @@ import search from "./search.mjs";
 import print from "./print.mjs";
 import sameTab from "./same-tab.mjs";
 import dates from "./dates.mjs";
+import branding from "./branding.mjs";
 
 const args = Object.fromEntries(
   process.argv.slice(2).reduce((acc, a, i, all) => {
@@ -35,7 +36,7 @@ const args = Object.fromEntries(
 );
 
 const BASE = args.base || "http://localhost:3000";
-const ALL = { pages: pagesRender, overflow, figures, tables, contrast, "dark-selects": darkSelects, charts, taps, search, print, "same-tab": sameTab, dates };
+const ALL = { pages: pagesRender, overflow, figures, tables, contrast, "dark-selects": darkSelects, charts, taps, search, print, "same-tab": sameTab, dates, branding };
 const only = typeof args.only === "string" ? args.only.split(",") : Object.keys(ALL);
 
 // In Claude Code on the web, Chromium is preinstalled at /opt/pw-browsers and

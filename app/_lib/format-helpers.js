@@ -31,12 +31,6 @@ export function formatCount(value) {
   return qtyFmt.format(Math.round(toNumber(value)));
 }
 
-/** Micron values come back as "40.00"; show "40". */
-export function formatMicron(value) {
-  if (value === null || value === undefined || value === "") return "";
-  return `${formatQty(value)} mic`;
-}
-
 export function initials(name) {
   return String(name || "?")
     .trim()

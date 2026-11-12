@@ -26,27 +26,24 @@
 - [x] Live Supabase project connected: migrations 0001-0007 applied,
       first admin added (a test account for now).
 
+- [x] Product: the app became a generic factory management product
+      (2026-11-12). Migration 0010 (item fields, size units and height,
+      sign-in branding, neutral defaults), Settings > Item fields, four
+      industry templates, `scripts/new-client.mjs`, `clients/` records and
+      the runbooks in `docs/product/`.
+
 ## Next
 
-- [ ] Add the real admins and workers in Users, then switch off the test
-      admin (admin@gmail.com).
-- [x] Moved to Mumbai: new Supabase project `cbdpijrrzjvkmyyhyubz` (0001 to 0009
-      applied and checked against the local test run), Vercel function region
-      `bom1` in `vercel.json`. Pause the old Singapore project once the live
-      site is confirmed working.
+- [ ] **Apply migration 0010 to AM Packaging** (`cbdpijrrzjvkmyyhyubz`),
+      then merge this work to `main` (`docs/product/UPDATING_CLIENTS.md`).
+      Until then `main` must not get the product code.
+- [ ] Pick the product's name (working name "Factory Manager" in
+      `app/_lib/siteConfig.js`).
+- [ ] First new client through `docs/product/NEW_CLIENT_SETUP.md`; fix the
+      runbook wherever it was wrong.
+- [ ] Product backlog, in order: Excel import of opening stock and
+      balances, post-dated cheques, invoice to WhatsApp, a demo per
+      template (`docs/product/PRODUCT.md`, Known limits).
 
-## Reminders
-
-- **Ask the client about importing existing records** (a register or Excel
-  file with opening stock and customer/supplier balances). Deferred by the
-  user on 2026-10-03: "Leave it for now, remind me in the future". Raise it
-  again now that phase 4 is done (raised with the user on 2026-10-03). Until then, opening stock is entered on
-  Stock > Opening stock / Adjust and opening balances on each customer and
-  supplier.
-
-## Open questions for the client (all configurable in Settings, none blocking)
-
-- The remaining tape sizes (6 of about 10 to 12 are seeded).
-- Recipes per product (materials per carton), entered in Settings > Recipes.
-- Units and raw materials for stretch film and plastic strip (manufactured in house).
-- Invoice details: NTN/STRN, GST on or off, terms.
+AM Packaging's own open items (real users, the test admin, importing their
+records, their open questions) are in `clients/am-packaging/CLIENT.md`.

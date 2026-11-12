@@ -27,7 +27,7 @@ import {
 
 export const DAY_WORKER = [
   "Raw material arrived? Record it under **Purchases** the same day.",
-  "Made tape, film or strips? Record it under **Production** before you go home.",
+  "Made something today? Record it under **Production** before you go home.",
   "Goods going out? Make the invoice under **Sales & Invoices** and print it.",
   "Something looks wrong? Do not enter it twice. Tell an admin.",
 ];
@@ -154,7 +154,8 @@ export const GUIDE_SECTIONS = [
     title: "First-time setup, in this order",
     steps: [
       "**Settings > Company & Invoice**: company name, address, NTN and STRN, GST rate, number prefixes and payment terms. These print on every invoice.",
-      "**Settings** lists: check **Categories**, **Units**, **Sizes**, **Microns**, **Colors / Types** and **Brands**. Add what is missing.",
+      "**Settings > Item fields**: switch on the details your items have (size, thickness, colour or type, pack count) and give each one the name your factory uses.",
+      "**Settings** lists: check **Categories**, **Units**, **Brands** and the size, thickness and colour lists. Add what is missing.",
       "**Raw Materials > Add Raw Material** and **Products > Add Product** for everything you buy and make. Set a **Low-stock level** for each.",
       "**Settings > Recipes**: for each product, how much of each raw material one unit uses.",
       "**Stock > Opening stock / Adjust**: enter today's count of every item as **Opening stock**.",

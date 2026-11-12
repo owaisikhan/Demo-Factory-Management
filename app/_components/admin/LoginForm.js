@@ -17,7 +17,7 @@ export default function LoginForm({ next, demo }) {
         <label htmlFor="email" className="form-label">
           Email address
         </label>
-        <input id="email" name="email" type="email" autoComplete="username" required={!demo} placeholder="e.g. ali@ampackaging.pk" className="form-input" />
+        <input id="email" name="email" type="email" autoComplete="username" required={!demo} placeholder="e.g. ali@yourcompany.pk" className="form-input" />
       </div>
       <div>
         <label htmlFor="password" className="form-label">

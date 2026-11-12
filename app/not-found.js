@@ -10,8 +10,8 @@ export default function NotFound() {
           <SearchX size={26} aria-hidden />
         </span>
         <h1 className="page-title">Page not found</h1>
-        <p className="text-sm text-secondary">That address does not exist in AM Packaging. Check the link, or open the app from the start.</p>
-        <Link href="/admin" className="btn-primary">Open AM Packaging</Link>
+        <p className="text-sm text-secondary">That address does not exist in this app. Check the link, or open the app from the start.</p>
+        <Link href="/admin" className="btn-primary">Open the app</Link>
       </div>
     </main>
   );

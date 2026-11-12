@@ -46,3 +46,7 @@ next-env.d.ts
 
 # Unzipped staging copy of the skill update; the .skill file is committed
 .claude/kodexa-skill-update/kodexa-builder/
+
+# Generated per client by scripts/new-client.mjs (rebuild, never edit)
+clients/*/setup.sql
+clients/*/first-admin.sql

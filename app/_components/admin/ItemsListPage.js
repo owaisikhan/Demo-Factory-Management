@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Boxes, CircleCheck, TriangleAlert, CircleX, Plus, SlidersHorizontal } from "lucide-react";
-import { getLookups, getStockCounts, getStockPage, PAGE_SIZE } from "@/app/_lib/data-service";
+import { getItemFields, getLookups, getStockCounts, getStockPage, PAGE_SIZE } from "@/app/_lib/data-service";
 import PageHeader from "@/app/_components/layout/PageHeader";
 import StatCard from "@/app/_components/ui/StatCard";
 import FilterBar from "@/app/_components/ui/FilterBar";
@@ -8,8 +8,8 @@ import ItemsTable from "./ItemsTable";
 
 export const COPY = {
   stock: { title: "Stock", subtitle: "What is in the factory right now, worked out from every purchase, production run and sale.", crumb: "Stock" },
-  raw: { title: "Raw Materials", subtitle: "Jumbo rolls, paper tubes, cartons, shrink film and anything else that goes into production.", crumb: "Raw Materials" },
-  finished: { title: "Products", subtitle: "Tape cartons, stretch film, plastic strip and any product type you add.", crumb: "Products" },
+  raw: { title: "Raw Materials", subtitle: "Everything you buy that goes into production, and the packing material it goes out in.", crumb: "Raw Materials" },
+  finished: { title: "Products", subtitle: "Everything the factory makes and sells. Add a new product type in Settings under Categories.", crumb: "Products" },
 };
 
 // One list page, three uses: Stock (all items), Raw Materials and Products.
@@ -19,10 +19,11 @@ export default async function ItemsListPage({ kind = "", searchParams, basePath,
   const copy = COPY[kind || "stock"];
   const filterKind = kind || sp.kind || "";
 
-  const [lookups, counts, list] = await Promise.all([
+  const [lookups, counts, list, fields] = await Promise.all([
     getLookups(),
     getStockCounts(filterKind || undefined),
     getStockPage({ kind: filterKind, category: sp.category, status: sp.status, q: sp.q, page: sp.page, active: sp.show === "all" ? "all" : "active" }),
+    getItemFields(),
   ]);
 
   const categories = lookups.categories.filter((c) => !filterKind || c.kind === filterKind);
@@ -86,6 +87,7 @@ export default async function ItemsListPage({ kind = "", searchParams, basePath,
         params={sp}
         mode={kind ? "manage" : "stock"}
         isAdmin={isAdmin}
+        fields={fields}
         emptyAction={isAdmin && addHref ? <Link href={addHref} className="btn-primary"><Plus size={18} aria-hidden /> Add the first one</Link> : null}
       />
     </div>

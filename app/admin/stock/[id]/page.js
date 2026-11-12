@@ -2,8 +2,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Pencil, SlidersHorizontal, History } from "lucide-react";
 import { requirePagePermission } from "@/app/_lib/helpers";
-import { getItem, getItemMovements, PAGE_SIZE } from "@/app/_lib/data-service";
-import { formatMicron, formatMoney, formatQty } from "@/app/_lib/format-helpers";
+import { getItem, getItemFields, getItemMovements, PAGE_SIZE } from "@/app/_lib/data-service";
+import { formatMoney, formatQty } from "@/app/_lib/format-helpers";
+import { formatPack, formatThickness } from "@/app/_lib/item-fields";
 import { formatDate, formatDateTime } from "@/app/_lib/date-helpers";
 import PageHeader from "@/app/_components/layout/PageHeader";
 import StockStatus from "@/app/_components/admin/StockStatus";
@@ -42,8 +43,7 @@ export default async function StockItemPage({ params, searchParams }) {
   const { id } = await params;
   const sp = await searchParams;
   const isAdmin = user.role === "admin";
-
-  const item = await getItem(id);
+  const [item, fields] = await Promise.all([getItem(id), getItemFields()]);
   if (!item) notFound();
   const history = await getItemMovements(id, sp.page);
   const editHref = `${item.kind === "raw" ? "/admin/raw-materials" : "/admin/products"}/${item.id}`;
@@ -83,10 +83,10 @@ export default async function StockItemPage({ params, searchParams }) {
           <div className="mt-4">
             <Detail label="Low-stock level">{`${formatQty(item.low_stock_level)} ${item.unit}`}</Detail>
             {item.brand_name ? <Detail label="Brand">{item.brand_name}</Detail> : null}
-            {item.size_label ? <Detail label="Size">{item.size_label}</Detail> : null}
-            {item.micron_value ? <Detail label="Micron">{formatMicron(item.micron_value)}</Detail> : null}
-            {item.color_name ? <Detail label="Color / type">{item.color_name}</Detail> : null}
-            {item.rolls_per_carton ? <Detail label="Rolls per carton">{item.rolls_per_carton}</Detail> : null}
+            {fields.size.enabled && item.size_label ? <Detail label={fields.size.label}>{item.size_label}</Detail> : null}
+            {fields.micron.enabled && item.micron_value ? <Detail label={fields.micron.label}>{formatThickness(item.micron_value, fields)}</Detail> : null}
+            {fields.color.enabled && item.color_name ? <Detail label={fields.color.label}>{item.color_name}</Detail> : null}
+            {fields.pack.enabled && item.rolls_per_carton ? <Detail label={fields.pack.label}>{formatPack(item.rolls_per_carton, fields)}</Detail> : null}
             {isAdmin && Number(item.default_rate) > 0 ? <Detail label="Default rate"><span className="num">{formatMoney(item.default_rate, { decimals: true })}</span></Detail> : null}
           </div>
         </div>

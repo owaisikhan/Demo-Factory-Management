@@ -30,14 +30,14 @@ export default function CompanySettingsForm({ settings }) {
         <h2 className="card-title border-b border-border pb-4">Company</h2>
         <div className="mt-5 grid gap-5 sm:grid-cols-2">
           <Field label="Company name" name="company_name" defaultValue={s.company_name} required wide />
-          <Field label="Short name" name="short_name" defaultValue={s.short_name} placeholder="e.g. AM Packaging" />
+          <Field label="Short name" name="short_name" defaultValue={s.short_name} placeholder="e.g. Khan Cartons" />
           <Field label="Tagline" name="tagline" defaultValue={s.tagline} />
           <Field label="Address" name="address" defaultValue={s.address} wide />
           <Field label="Phone" name="phone" defaultValue={s.phone} placeholder="e.g. 0300 1234567" />
-          <Field label="Email" name="email" type="email" defaultValue={s.email} placeholder="e.g. sales@ampackaging.pk" />
+          <Field label="Email" name="email" type="email" defaultValue={s.email} placeholder="e.g. sales@yourcompany.pk" />
           <Field label="NTN" name="ntn" defaultValue={s.ntn} placeholder="National Tax Number" />
           <Field label="STRN" name="strn" defaultValue={s.strn} placeholder="Sales Tax Registration Number" />
-          <Field label="Logo address (URL)" name="logo_url" defaultValue={s.logo_url} placeholder="Leave empty to use the AM tile" hint="A link to the logo image, shown on invoices." wide />
+          <Field label="Logo address (URL)" name="logo_url" defaultValue={s.logo_url} placeholder="Leave empty to show the box icon" hint="A link to the logo image, shown on invoices." wide />
         </div>
       </div>
 

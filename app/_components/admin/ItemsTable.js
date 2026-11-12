@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Boxes } from "lucide-react";
-import { formatMicron, formatMoney, formatQty } from "@/app/_lib/format-helpers";
+import { formatMoney, formatQty } from "@/app/_lib/format-helpers";
+import { itemDetails } from "@/app/_lib/item-fields";
 import StockStatus from "./StockStatus";
 import EmptyState from "@/app/_components/ui/EmptyState";
 import Pagination from "@/app/_components/ui/Pagination";
@@ -8,7 +9,7 @@ import Badge from "@/app/_components/ui/Badge";
 
 // The items table shared by Stock, Raw Materials and Products.
 // mode "stock" links rows to the stock history; "manage" links to the edit form.
-export default function ItemsTable({ rows, total, page, perPage, basePath, params, mode = "stock", isAdmin, emptyAction }) {
+export default function ItemsTable({ rows, total, page, perPage, basePath, params, mode = "stock", isAdmin, emptyAction, fields }) {
   if (rows.length === 0) {
     return (
       <div className="card overflow-hidden">
@@ -68,13 +69,7 @@ export default function ItemsTable({ rows, total, page, perPage, basePath, param
           <tbody>
             {rows.map((r) => {
               const href = hrefFor(r);
-              const details = [
-                r.brand_name,
-                r.size_label,
-                formatMicron(r.micron_value),
-                r.color_name,
-                r.rolls_per_carton ? `${r.rolls_per_carton} rolls/ctn` : null,
-              ].filter(Boolean);
+              const details = itemDetails(r, fields);
               return (
                 <tr key={r.id} className={r.active ? "" : "opacity-60"}>
                   <td className="min-w-[220px]">

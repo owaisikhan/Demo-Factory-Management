@@ -258,3 +258,11 @@ for the rules.
 - **Scope:** type: dashboard, ledger
 - **Target in skill:** references/types/dashboard.md (roles and permissions)
 - **Status:** logged
+
+### L-028 · 2026-11-12 · high · preference
+- **Said / saw:** "make this factory management system generic, and lets make a master copy of this software so that every new client can be made from this repo ... turn this one client app into a product"; the repo was then renamed from AM-Packaging to Dem-factory-management
+- **Context:** a one-client dashboard (AM Packaging) turned into a product for other Pakistani factories
+- **Lesson:** Build client apps so they can become products: client name, address and invoice details only in the settings row (with a security-definer branding function for the sign-in page), industry words as settings with the first client's words as defaults, starting lists as per-industry template SQL rather than in a migration, and one repo deployed to one Supabase + Vercel project per client with a `clients/<slug>/` record (client.json the script reads, CLIENT.md for people). Because a push to main deploys every client, migrations go to every client first and must be backward compatible.
+- **Scope:** type: dashboard, ledger
+- **Target in skill:** references/types/dashboard.md (productising a client app)
+- **Status:** logged

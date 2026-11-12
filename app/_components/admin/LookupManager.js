@@ -56,7 +56,7 @@ function FieldInput({ field, defaultValue }) {
       inputMode={field.type === "number" ? "decimal" : undefined}
       placeholder={field.placeholder}
       aria-label={field.label}
-      required
+      required={!field.optional}
       className="form-input sm:flex-1"
     />
   );
@@ -86,13 +86,18 @@ const fmtNum = (v) => new Intl.NumberFormat("en-PK", { maximumFractionDigits: 2 
 
 // Per-list setup. Kept here (not passed from the page) because the column
 // renderers are functions, which cannot cross from a server component.
-const CONFIG = {
+// The size, thickness and colour lists take this client's own words from
+// Settings > Item fields.
+function configFor(table, itemFields) {
+  const f = itemFields;
+  const dims = [f.size.width, f.size.length, ...(f.size.height.enabled ? [f.size.height] : [])];
+  const CONFIG = {
   item_categories: {
     title: "Categories",
     singular: "category",
-    hint: "Groups for raw materials and products. Add a new product type here, for example Packing Twine.",
+    hint: "Groups for raw materials and products. Add a new product type here when the factory starts making one.",
     fields: [
-      { name: "name", label: "Name", placeholder: "e.g. Packing Twine" },
+      { name: "name", label: "Name", placeholder: "e.g. Packing Material" },
       { name: "kind", label: "Used for", type: "kind" },
     ],
     display: [
@@ -103,37 +108,43 @@ const CONFIG = {
   brands: {
     title: "Brands",
     singular: "brand",
-    hint: "Brands of paper tubes, cartons and other materials.",
-    fields: [{ name: "name", label: "Brand name", placeholder: "e.g. Star Tubes" }],
+    hint: "Brands of the materials you buy and the products you sell.",
+    fields: [{ name: "name", label: "Brand name", placeholder: "e.g. Star" }],
     display: [{ label: "Brand", render: (r) => r.name, className: "font-semibold text-heading" }],
   },
   sizes: {
-    title: "Sizes",
-    singular: "size",
-    hint: "Tape sizes as width in mm and length in yards.",
+    title: `${f.size.label} list`,
+    singular: f.size.label.toLowerCase(),
+    hint: `As ${dims.map((d) => `${d.label.toLowerCase()} (${d.unit})`).join(" x ")}. The units are set in Item fields.`,
     fields: [
-      { name: "width_mm", label: "Width (mm)", type: "number", placeholder: "e.g. 48" },
-      { name: "length_yd", label: "Length (yards)", type: "number", placeholder: "e.g. 72" },
+      { name: "width_mm", label: `${f.size.width.label} (${f.size.width.unit})`, type: "number", placeholder: "e.g. 48" },
+      { name: "length_yd", label: `${f.size.length.label} (${f.size.length.unit})`, type: "number", placeholder: "e.g. 72" },
+      ...(f.size.height.enabled
+        ? [{ name: "height_mm", label: `${f.size.height.label} (${f.size.height.unit})`, type: "number", placeholder: "e.g. 10", optional: true }]
+        : []),
     ],
     display: [
-      { label: "Size", render: (r) => r.label, className: "font-semibold text-heading num" },
-      { label: "Width", render: (r) => `${fmtNum(r.width_mm)} mm`, className: "num text-sm text-secondary" },
-      { label: "Length", render: (r) => `${fmtNum(r.length_yd)} yd`, className: "num text-sm text-secondary" },
+      { label: f.size.label, render: (r) => r.label, className: "font-semibold text-heading num" },
+      { label: f.size.width.label, render: (r) => `${fmtNum(r.width_mm)} ${f.size.width.unit}`, className: "num text-sm text-secondary" },
+      { label: f.size.length.label, render: (r) => `${fmtNum(r.length_yd)} ${f.size.length.unit}`, className: "num text-sm text-secondary" },
+      ...(f.size.height.enabled
+        ? [{ label: f.size.height.label, render: (r) => (r.height_mm ? `${fmtNum(r.height_mm)} ${f.size.height.unit}` : ""), className: "num text-sm text-secondary" }]
+        : []),
     ],
   },
   microns: {
-    title: "Microns",
-    singular: "micron",
-    hint: "Film thickness options for jumbo rolls and tape.",
-    fields: [{ name: "value", label: "Micron", type: "number", placeholder: "e.g. 40" }],
-    display: [{ label: "Micron", render: (r) => `${fmtNum(r.value)} micron`, className: "font-semibold text-heading num" }],
+    title: `${f.micron.label} list`,
+    singular: f.micron.label.toLowerCase(),
+    hint: `The ${f.micron.label.toLowerCase()} options items can have, in ${f.micron.unit}.`,
+    fields: [{ name: "value", label: `${f.micron.label} (${f.micron.unit})`, type: "number", placeholder: "e.g. 40" }],
+    display: [{ label: f.micron.label, render: (r) => `${fmtNum(r.value)} ${f.micron.unit}`, className: "font-semibold text-heading num" }],
   },
   colors: {
-    title: "Colors / Types",
-    singular: "color / type",
-    hint: "Clear, brown, printed and so on.",
-    fields: [{ name: "name", label: "Name", placeholder: "e.g. Clear" }],
-    display: [{ label: "Color / type", render: (r) => r.name, className: "font-semibold text-heading" }],
+    title: `${f.color.label} list`,
+    singular: f.color.label.toLowerCase(),
+    hint: "For example a colour, a grade or a finish.",
+    fields: [{ name: "name", label: "Name", placeholder: "e.g. Brown" }],
+    display: [{ label: f.color.label, render: (r) => r.name, className: "font-semibold text-heading" }],
   },
   units: {
     title: "Units",
@@ -148,10 +159,12 @@ const CONFIG = {
       { label: "Short form", render: (r) => r.short_name, className: "text-sm text-secondary" },
     ],
   },
-};
+  };
+  return CONFIG[table];
+}
 
-export default function LookupManager({ table, rows }) {
-  const { title, singular, hint, fields, display } = CONFIG[table];
+export default function LookupManager({ table, rows, itemFields }) {
+  const { title, singular, hint, fields, display } = configFor(table, itemFields);
   const [editing, setEditing] = useState(null);
   const [state, formAction] = useActionState(saveLookup, null);
   const formRef = useRef(null);
@@ -221,7 +234,10 @@ export default function LookupManager({ table, rows }) {
         <input type="hidden" name="table" value={table} />
         {fields.map((f) => (
           <div key={f.name}>
-            <label className="form-label" htmlFor={`new-${table}-${f.name}`}>{f.label}</label>
+            <label className="form-label" htmlFor={`new-${table}-${f.name}`}>
+              {f.label}
+              {f.optional ? <span className="ml-1 font-normal text-muted">(optional)</span> : null}
+            </label>
             {f.type === "kind" ? (
               <select id={`new-${table}-${f.name}`} name={f.name} defaultValue="raw" className="form-select">
                 <option value="raw">Raw material</option>
@@ -233,7 +249,7 @@ export default function LookupManager({ table, rows }) {
                 name={f.name}
                 inputMode={f.type === "number" ? "decimal" : undefined}
                 placeholder={f.placeholder}
-                required
+                required={!f.optional}
                 className="form-input"
               />
             )}

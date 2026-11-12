@@ -1,5 +1,34 @@
 # Changelog
 
+## 2026-11-12: One-client app becomes a product
+
+- The repo is now the master copy of a factory management product
+  (GitHub `owaisikhan/Dem-factory-management`). Every client runs the same
+  code on their own Supabase and Vercel project. AM Packaging is client 1
+  (`clients/am-packaging/`); their plan moved there from `docs/PLAN.md`, and
+  their one-off starting lists from `supabase/seed/`.
+- `0010_product.sql`: Settings decides which item details exist and what
+  they are called (size, thickness or grade, colour or type, pack count),
+  with the old tape words as defaults so AM Packaging sees no change. Sizes
+  take a third measure (height) and name themselves from the units chosen
+  in Settings; changing the units renames every size in one settings log
+  entry. `app_branding()` lets the sign-in page show the client's name.
+  New databases start as "Your Company Name". Rule tests added.
+- **Settings > Item fields** tab; the size, thickness and colour tabs carry
+  the client's names and hide when switched off. Item form, lists and stock
+  page use the same names. Switching a field off keeps saved values.
+- The menu, sign-in page, page titles and footer show the client's name
+  from their database instead of "AM Packaging" in the code. Demo data is
+  now "Demo Packaging" with fictional people. Tape-only copy and
+  placeholders made neutral (English and Urdu guide too).
+- Industry templates (`supabase/templates/`): packaging-tape,
+  corrugated-carton, plastic-bags, general. `scripts/new-client.mjs` builds a
+  new client's `setup.sql` (all migrations, template, company details, one
+  transaction) and `first-admin.sql`; it refuses clients already live.
+  `supabase/tests/templates.sh` tests a setup on every template.
+- Docs: `docs/product/` (PRODUCT, NEW_CLIENT_SETUP, UPDATING_CLIENTS,
+  CLIENT_INTAKE, TEMPLATES), `clients/README.md` and `clients/_template/`.
+
 ## 2026-10-05: Reports "Pick dates" works
 
 - Choosing **Period > Pick dates** on Reports sent no dates, so the page
