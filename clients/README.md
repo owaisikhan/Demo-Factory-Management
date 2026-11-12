@@ -6,7 +6,7 @@ each), their Vercel project and the details in their folder.
 
 | Client | Template | Status | Supabase ref | Migrations applied | Folder |
 |---|---|---|---|---|---|
-| AM Packaging, Faisalabad | packaging-tape | live | `cbdpijrrzjvkmyyhyubz` | 0009 (0010 next) | [am-packaging](am-packaging/CLIENT.md) |
+| AM Packaging, Faisalabad | packaging-tape | live | `cbdpijrrzjvkmyyhyubz` | 0010 | [am-packaging](am-packaging/CLIENT.md) |
 
 Keep this table and each `client.json` "migrationsApplied" up to date: they
 are how you know which clients still need a new migration

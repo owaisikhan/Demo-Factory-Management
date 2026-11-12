@@ -75,15 +75,8 @@ then needs a second plan.
 - Run `supabase/tests/*.sh` against a client. They drop and recreate their
   own local database.
 
-## Now: migration 0010 for AM Packaging
+## Done so far
 
-0010 (`0010_product.sql`) is the migration that made the product generic.
-AM Packaging is on 0009. Before this branch is merged to `main`:
-
-1. Apply `supabase/migrations/0010_product.sql` to project
-   `cbdpijrrzjvkmyyhyubz` (check the ref) as in step 3 above.
-2. Expected: no visible change for them. Item fields start with the tape
-   words (Size in mm x yd, Micron, Color / type, Rolls per carton); their
-   company details are untouched (0010 only replaces the starting details
-   on a database with no items); the sign-in page now shows their name.
-3. Set their `migrationsApplied` to `0010`, then merge.
+| Migration | Applied to | Date |
+|---|---|---|
+| 0010_product | am-packaging | 2026-11-12 |

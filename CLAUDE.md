@@ -69,9 +69,7 @@ chose (invenza-html.vercel.app); do not "fix" them. Text in green or red uses
 - **Migrations are append-only.** Never edit one that any client has
   applied; add a new numbered file. Which client is on which migration is
   in `clients/README.md` and each `clients/<slug>/client.json`. AM Packaging
-  (ref cbdpijrrzjvkmyyhyubz, Mumbai) is on 0009; 0010 (`0010_product.sql`)
-  is written and tested and must be applied to them before this code
-  reaches `main`. Their old Singapore project (fqvmljwlwfjensumiqws) is
+  (ref cbdpijrrzjvkmyyhyubz, Mumbai) is on 0010 (applied 2026-11-12). Their old Singapore project (fqvmljwlwfjensumiqws) is
   retired: do not apply anything to it. The next new migration is 0011.
 - **A live database is identified by its ref**, matched against the
   client's `client.json`, never by its name or by being the only one open.

@@ -34,9 +34,6 @@
 
 ## Next
 
-- [ ] **Apply migration 0010 to AM Packaging** (`cbdpijrrzjvkmyyhyubz`),
-      then merge this work to `main` (`docs/product/UPDATING_CLIENTS.md`).
-      Until then `main` must not get the product code.
 - [ ] Pick the product's name (working name "Factory Manager" in
       `app/_lib/siteConfig.js`).
 - [ ] First new client through `docs/product/NEW_CLIENT_SETUP.md`; fix the

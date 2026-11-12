@@ -22,7 +22,7 @@ database.
 | Retired project | `fqvmljwlwfjensumiqws` (Singapore). Never apply anything to it; pause it once the live site is confirmed |
 | Vercel project | fill in |
 | Industry template | packaging-tape (their lists were seeded by hand before templates existed) |
-| Migrations applied | 0001 to 0009. **0010 is next** (see below) |
+| Migrations applied | 0001 to 0010 |
 
 ## Agreement
 
@@ -32,11 +32,6 @@ support, being the reference client).
 
 ## Open items
 
-- [ ] Apply migration 0010 to their database **before** their Vercel
-      project deploys the product version of the code. 0010 keeps every
-      word on their screens the same (its defaults are the tape words),
-      adds Settings > Item fields, and makes the sign-in page show their
-      company name. Steps: `docs/product/UPDATING_CLIENTS.md`.
 - [ ] Add the real admins and workers in Users, then switch off the test
       admin (admin@gmail.com).
 - [ ] Ask about importing existing records (a register or Excel file with
@@ -58,4 +53,6 @@ not in the code.
 - 2026-10-05: moved to the Mumbai project, migrations 0001 to 0009 applied,
   starting lists seeded.
 - 2026-11-12: the codebase became the product master copy; this client
-  record created.
+  record created. Migration 0010 applied (items, stock total, movements,
+  activity count and size names checked identical before and after), then
+  the product code went to `main`.
