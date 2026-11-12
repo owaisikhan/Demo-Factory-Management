@@ -32,8 +32,9 @@ support, being the reference client).
 
 ## Open items
 
-- [ ] Add the real admins and workers in Users, then switch off the test
-      admin (admin@gmail.com).
+- [ ] Add the real admins and workers in Users. For now the only admin is
+      test@gmail.com ("Test Admin"); admin@gmail.com was switched off on
+      2026-11-12 (kept, not deleted, because it recorded 2 stock entries).
 - [ ] Ask about importing existing records (a register or Excel file with
       opening stock and customer/supplier balances). Deferred by the owner
       on 2026-10-03: "Leave it for now, remind me in the future".
@@ -55,4 +56,5 @@ not in the code.
 - 2026-11-12: the codebase became the product master copy; this client
   record created. Migration 0010 applied (items, stock total, movements,
   activity count and size names checked identical before and after), then
-  the product code went to `main`.
+  the product code went to `main`. test@gmail.com made the only admin;
+  admin@gmail.com switched off.

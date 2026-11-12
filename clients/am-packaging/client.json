@@ -22,7 +22,7 @@
   },
   "firstAdmin": {
     "full_name": "Test Admin",
-    "email": "admin@gmail.com"
+    "email": "test@gmail.com"
   },
   "supabase": {
     "projectRef": "cbdpijrrzjvkmyyhyubz",
