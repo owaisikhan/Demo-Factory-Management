@@ -3,7 +3,7 @@
 ## 2026-11-12: One-client app becomes a product
 
 - The repo is now the master copy of a factory management product
-  (GitHub `owaisikhan/Dem-factory-management`). Every client runs the same
+  (GitHub `owaisikhan/Demo-Factory-Management`). Every client runs the same
   code on their own Supabase and Vercel project. AM Packaging is client 1
   (`clients/am-packaging/`); their plan moved there from `docs/PLAN.md`, and
   their one-off starting lists from `supabase/seed/`.

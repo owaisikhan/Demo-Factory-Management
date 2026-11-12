@@ -4,7 +4,7 @@
 
 The **master copy** of a factory management product (stock, production,
 purchases, sales, credit) sold to small Pakistani factories. GitHub repo
-`owaisikhan/Dem-factory-management` (renamed from AM-Packaging on
+`owaisikhan/Demo-Factory-Management` (renamed from AM-Packaging on
 2026-11-12). Every client runs this same code on their own Supabase and
 Vercel project; nothing is forked per client. What is built and what is
 next is in `docs/PROGRESS.md`; the product, its limits and the per-client

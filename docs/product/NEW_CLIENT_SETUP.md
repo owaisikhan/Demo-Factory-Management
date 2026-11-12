@@ -2,7 +2,7 @@
 
 From signed agreement to the owner signing in: about two hours of your
 time, plus the onboarding visit. Every client runs the **same code** from
-this repo (`owaisikhan/Dem-factory-management`, branch `main`) on their own
+this repo (`owaisikhan/Demo-Factory-Management`, branch `main`) on their own
 Supabase project and their own Vercel project. Nothing is copied or forked.
 
 ```
@@ -100,7 +100,7 @@ In the client's Supabase project:
 
 ## 6. Create the Vercel project
 
-1. vercel.com > **Add New > Project** > import `owaisikhan/Dem-factory-management`.
+1. vercel.com > **Add New > Project** > import `owaisikhan/Demo-Factory-Management`.
    Project name: the slug. Framework: Next.js (detected). Root: the repo root.
 2. **Environment Variables** (Production, Preview and Development), from
    Supabase > Project Settings > API:

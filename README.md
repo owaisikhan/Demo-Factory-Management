@@ -2,7 +2,7 @@
 
 Stock, production, purchases, sales and credit for small factories in
 Pakistan: one app for the owner and the floor staff, on phones and a
-laptop. This repo (`owaisikhan/Dem-factory-management`) is the **master
+laptop. This repo (`owaisikhan/Demo-Factory-Management`) is the **master
 copy**: every client runs this same code on their own database.
 
 The first client is AM Packaging, a tape factory in Faisalabad
