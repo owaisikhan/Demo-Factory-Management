@@ -266,3 +266,11 @@ for the rules.
 - **Scope:** type: dashboard, ledger
 - **Target in skill:** references/types/dashboard.md (productising a client app)
 - **Status:** logged
+
+### L-029 · 2026-11-16 · medium · preference
+- **Said / saw:** in Ads Manager the user chose Meta's 1:1 crop of the poster video over the full 4:5 file: "there is already a whatsapp button and this way the video is enlarged which looks good"
+- **Context:** factory software poster-scroll ad (cream poster, app in a tablet frame, chips, green WhatsApp bar), Engagement → WhatsApp campaign
+- **Lesson:** For a Meta ad whose CTA is Meta's own WhatsApp button, the in-video WhatsApp bar is redundant in Feed. Make the Feed creative square-safe (1:1): headline, app screen and chips inside the centre square, no WhatsApp bar or phone number below it, so Meta's 1:1 crop shows a bigger video without losing anything. Keep the bar on the organic post versions.
+- **Scope:** type: ads (kodexa-reels)
+- **Target in skill:** kodexa-reels references/quality-rules.md (Layout for ads) and posts-and-ads.md section 5
+- **Status:** logged
