@@ -88,13 +88,21 @@ chose (invenza-html.vercel.app); do not "fix" them. Text in green or red uses
   `requirePagePermission` / `requirePermission` (and `requirePageRole` /
   `requireRole` for admin-only things) the second, hidden nav links cosmetic.
   `DEMO_ROLE=demo-w2` shows a worker with only stock and production.
-- **Demo mode:** with no Supabase env vars the app runs on
-  `app/_lib/demo-data.js` and saving is off. Keep demo rows shaped exactly like
-  the real query rows (including the item-field columns on `demoSettings`).
-  `DEMO_ROLE=worker` shows it as a worker. The demo is a fictional tape
-  factory ("Demo Factory Management Software"), signed in with test@gmail.com / 12341234
-  (`app/_lib/demo-auth.js`; `DEMO_LOGIN=off` turns the sign-in off), and doubles as
-  the sales demo.
+- **Demo mode (local mode), the browser-saved demo:** on when there are no
+  Supabase env vars, `LOCAL_MODE=1`, or the deployment is listed in
+  `LOCAL_DEPLOYMENTS` in `app/_lib/config.js` (am-packaging-iota is, since
+  2026-11-16; its Supabase data is untouched). The app then runs on
+  `app/_lib/local-db/`: PGlite (Postgres as WebAssembly) on the server, built
+  from the same migrations, so every rule still applies. `createClient()` and
+  `createAdminClient()` return stand-ins with the same API, so
+  `data-service.js` and `actions.js` have no demo branches. Each visitor starts
+  empty; the bar on top fills a month of sample data (`seed.js`, from
+  `demo-data.js` through the posting functions) or clears all. Their entries
+  are a compressed log in `fdb_` cookies (`oplog.js`, about 30 KB room),
+  replayed onto a starting point after a cold start; ids and times replay
+  identically (`local_uuid()`, `local_now()`). Sign in: test@gmail.com /
+  12341234 (`demo-auth.js`; `DEMO_LOGIN=off` turns it off). `DEMO_ROLE=worker`
+  shows the first sample worker. The checks run on the sample data.
 - Design language follows the reference site exactly: tokens and component
   classes in `app/_styles/globals.css`. Do not add features from the
   reference that the client did not ask for.
@@ -121,7 +129,7 @@ chose (invenza-html.vercel.app); do not "fix" them. Text in green or red uses
    Never run it against a client's project. `bash supabase/tests/templates.sh`
    builds a new client's setup on every industry template and applies it
    to throwaway local databases.
-3. Screens: `npm run build && npm start` with no env (demo mode), then
+3. Screens: `npm run build && npm start` with no env (demo mode, sample data), then
    `npm run check` (about two minutes, all must pass). Add a check to
    `scripts/checks/` for every bug that passed the build, and a new page to
    `scripts/checks/pages.mjs`. Then look at the changed screens at 1440, 1024,

@@ -1,5 +1,25 @@
 # Changelog
 
+## 2026-11-16: Browser-saved demo
+
+- Demo mode now saves. Each visitor gets their own database (PGlite,
+  Postgres as WebAssembly, running the same migrations on the server), and
+  their entries are kept in their own browser as a compressed log in cookies
+  (`app/_lib/local-db/`). After a server restart the log is replayed, with the
+  same record ids and times. Every rule (stock guard, numbering, voids,
+  permissions, activity log) works as on a client database.
+- A bar on top: **Fill with sample data** (the month in `demo-data.js`,
+  entered through the posting functions) and **Clear all**. Visitors start
+  empty.
+- `data-service.js` lost its 53 sample-data branches and `demo-reports.js` is
+  gone: in demo mode `createClient()` returns the local stand-in, so the same
+  queries answer.
+- am-packaging-iota.vercel.app is listed in `LOCAL_DEPLOYMENTS`
+  (`app/_lib/config.js`) and runs as this demo; its Supabase data is
+  untouched and comes back when it is taken off the list.
+- The checks run on the sample data and find real records from the lists.
+  Fixed: "Left to pay" on an unpaid purchase was 4.4:1 on its pink box.
+
 ## 2026-11-16: Demo sign-in
 
 - A deployment with no database (the demo) now asks for one shared demo

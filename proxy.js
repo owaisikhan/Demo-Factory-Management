@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { DEMO_COOKIE, demoSignedIn } from "./app/_lib/demo-auth";
+import { isDemoMode } from "./app/_lib/config";
 
 // Two jobs: refresh the Supabase session cookie (Server Components cannot
 // write cookies) and send signed-out visitors to /login. This only decides
@@ -10,8 +11,8 @@ export default async function proxy(request) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  // Demo mode: no database. The demo account's cookie decides (demo-auth.js).
-  if (!url || !key) {
+  // Local (demo) mode: the demo account's cookie decides (demo-auth.js).
+  if (isDemoMode) {
     const signedIn = await demoSignedIn(request.cookies.get(DEMO_COOKIE)?.value);
     return redirectFor(request, signedIn) ?? NextResponse.next({ request });
   }

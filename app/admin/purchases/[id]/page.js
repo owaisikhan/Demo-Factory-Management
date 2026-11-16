@@ -161,7 +161,12 @@ export default async function PurchaseDetailPage({ params, searchParams }) {
                 <>
                   <MoneyRow label="Paid">{money(p.paid)}</MoneyRow>
                   <div className={`rounded-xl px-4 py-3 ${left > 0 ? "bg-[#fef2f2] dark:bg-[#450a0a]" : "bg-primary-light"}`}>
-                    <MoneyRow label={left > 0 ? "Left to pay" : "Fully paid"} tone={left > 0 ? "danger" : "primary"}>
+                    {/* Darker red on the pink box: the usual red is 4.4:1 there, below AA */}
+                    <MoneyRow
+                      label={left > 0 ? "Left to pay" : "Fully paid"}
+                      tone={left > 0 ? "danger" : "primary"}
+                      className={left > 0 ? "[&_.num]:text-[#b91c1c] dark:[&_.num]:text-[#f87171]" : undefined}
+                    >
                       {money(left)}
                     </MoneyRow>
                   </div>

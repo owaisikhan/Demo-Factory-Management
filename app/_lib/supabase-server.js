@@ -1,9 +1,13 @@
 import "server-only";
 import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
+import { isDemoMode } from "./config";
+import { createLocalClient } from "./local-db/client";
 
 // Server client bound to the request's session, so RLS sees the real user.
+// In local mode (config.js) the visitor's own database answers instead.
 export async function createClient() {
+  if (isDemoMode) return createLocalClient();
   const cookieStore = await cookies();
 
   return createServerClient(

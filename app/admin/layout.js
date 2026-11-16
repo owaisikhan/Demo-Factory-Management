@@ -4,6 +4,7 @@ import { connection } from "next/server";
 import { getCurrentUser } from "@/app/_lib/helpers";
 import { getBranding, getLowStockAlerts, getStockCounts } from "@/app/_lib/data-service";
 import { isDemoMode } from "@/app/_lib/config";
+import { readLog } from "@/app/_lib/local-db/oplog";
 import { siteConfig } from "@/app/_lib/siteConfig";
 import Sidebar from "@/app/_components/layout/Sidebar";
 import Header from "@/app/_components/layout/Header";
@@ -20,7 +21,7 @@ export default async function AdminLayout({ children }) {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
 
-  const [alerts, counts, brand] = await Promise.all([getLowStockAlerts(), getStockCounts(), getBranding()]);
+  const [alerts, counts, brand, log] = await Promise.all([getLowStockAlerts(), getStockCounts(), getBranding(), isDemoMode ? readLog() : null]);
 
   return (
     <Suspense>
@@ -29,7 +30,7 @@ export default async function AdminLayout({ children }) {
         <div className="app-main">
           <Header user={user} alerts={alerts} alertCount={counts.low + counts.out} />
           <main className="flex-1 px-4 py-6 sm:px-6">
-            {isDemoMode ? <DemoBanner /> : null}
+            {isDemoMode ? <DemoBanner base={log.base} entries={log.ops.length} /> : null}
             <PendingRegion>{children}</PendingRegion>
           </main>
           <Footer companyName={brand.company_name} />

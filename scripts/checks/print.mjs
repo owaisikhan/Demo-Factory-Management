@@ -1,11 +1,11 @@
 // Printing an invoice prints only the invoice: no menu, header, demo banner
 // or admin payment panel.
-import { open } from "./pages.mjs";
+import { RECORD, open } from "./pages.mjs";
 
 export default async function print({ base, browser, ok }) {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   await page.emulateMedia({ media: "print" });
-  await open(page, base, "/admin/sales/sa-16");
+  await open(page, base, `/admin/sales/${RECORD.sale}`);
   const shown = await page.evaluate(() =>
     [".app-sidebar", ".app-header", ".app-footer", ".no-print"].filter((sel) => [...document.querySelectorAll(sel)].some((el) => el.offsetParent || getComputedStyle(el).display !== "none")),
   );

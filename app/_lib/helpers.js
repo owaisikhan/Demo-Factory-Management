@@ -5,7 +5,8 @@ import { cookies } from "next/headers";
 import { DEMO_COOKIE, demoSignedIn } from "./demo-auth";
 import { createClient } from "./supabase-server";
 import { isDemoMode, ROLES } from "./config";
-import { demoProfile, demoProfiles } from "./demo-data";
+import { demoProfiles } from "./demo-data";
+import { LOCAL_USER } from "./local-db/engine";
 import { can } from "./permissions";
 
 export { ROLES, can };
@@ -15,18 +16,23 @@ export { ROLES, can };
  * Cached per request so the layout and the page share one lookup.
  */
 export const getCurrentUser = cache(async () => {
-  // DEMO_ROLE=worker shows the demo as a worker sees it, for reviewing screens;
-  // DEMO_ROLE=demo-w2 picks that demo profile (a worker with fewer permissions).
+  const supabase = await createClient();
+
+  // Local mode: the demo account, from the visitor's own database.
+  // DEMO_ROLE=worker shows it as the first worker sees it (sample data has
+  // workers); DEMO_ROLE=demo-w2 picks that sample worker (fewer permissions).
   if (isDemoMode) {
     if (!(await demoSignedIn((await cookies()).get(DEMO_COOKIE)?.value))) return null;
     const pick = process.env.DEMO_ROLE;
-    if (!pick || pick === "admin") return demoProfile;
-    const found = demoProfiles.find((p) => (pick === "worker" ? p.role === "worker" : p.id === pick)) ?? demoProfile;
-    const { created_at: _c, ...profile } = found;
-    return profile;
+    let query = supabase.from("profiles").select("id, full_name, role, active, permissions").eq("active", true);
+    if (pick === "worker") query = query.eq("role", "worker");
+    else if (pick && pick !== "admin") query = query.eq("full_name", demoProfiles.find((p) => p.id === pick)?.full_name ?? "");
+    else query = query.eq("id", LOCAL_USER.id);
+    const { data } = await query.order("created_at").limit(1);
+    const own = data?.[0] ?? (await supabase.from("profiles").select("id, full_name, role, active, permissions").eq("id", LOCAL_USER.id).maybeSingle()).data;
+    return own ? { ...own, email: own.id === LOCAL_USER.id ? LOCAL_USER.email : "" } : null;
   }
 
-  const supabase = await createClient();
   const { data: claimsData, error } = await supabase.auth.getClaims();
   const claims = claimsData?.claims;
   if (error || !claims?.sub) return null;
@@ -51,9 +57,6 @@ export async function requirePageRole(role) {
 
 /** For Server Actions: throws a readable error instead of redirecting. */
 export async function requireRole(role) {
-  if (isDemoMode) {
-    throw new Error("This is the demo. Connect the database to save changes.");
-  }
   const user = await getCurrentUser();
   if (!user) throw new Error("Your session has ended. Sign in again.");
   if (role === ROLES.ADMIN && user.role !== ROLES.ADMIN) {

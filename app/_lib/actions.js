@@ -4,12 +4,14 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "./supabase-server";
 import { createAdminClient } from "./supabase-auth";
-import { can, requirePermission, requireRole, ROLES } from "./helpers";
+import { can, getCurrentUser, requirePermission, requireRole, ROLES } from "./helpers";
 import { PERMISSION_KEYS } from "./permissions";
 import { ITEM_FIELD_KEYS } from "./item-fields";
 import { isDemoMode } from "./config";
 import { cookies } from "next/headers";
 import { DEMO_COOKIE, DEMO_COOKIE_DAYS, demoLogin, demoToken } from "./demo-auth";
+import { resetLog } from "./local-db/oplog";
+import { forgetCopy } from "./local-db/engine";
 
 // Every write lives in this file. Each action returns { ok, message, ...extras }
 // so one <FormMessage> renders them all.
@@ -127,6 +129,27 @@ export async function signOut() {
     await supabase.auth.signOut();
   }
   redirect("/login");
+}
+
+// ---------------------------------------------------------------
+// Local (demo) mode: start again from sample data or from empty
+// ---------------------------------------------------------------
+async function restart(base, message) {
+  if (!isDemoMode) return fail("This only works in the demo.");
+  const user = await getCurrentUser();
+  if (!user) return fail("Your session has ended. Sign in again.");
+  const old = await resetLog(base);
+  if (old) forgetCopy(old);
+  revalidatePath("/", "layout");
+  return ok(message);
+}
+
+export async function loadSampleData() {
+  return restart("sample", "Sample data loaded.");
+}
+
+export async function clearLocalData() {
+  return restart("empty", "Everything entered in this browser is cleared.");
 }
 
 // ---------------------------------------------------------------

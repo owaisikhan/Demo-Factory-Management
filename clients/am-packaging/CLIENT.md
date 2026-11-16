@@ -20,7 +20,7 @@ database.
 |---|---|
 | Supabase project ref | `cbdpijrrzjvkmyyhyubz` (Mumbai, ap-south-1), live since 2026-10-05 |
 | Retired project | `fqvmljwlwfjensumiqws` (Singapore). Never apply anything to it; pause it once the live site is confirmed |
-| Vercel project | https://am-packaging-iota.vercel.app (deploys `main`) |
+| Vercel project | https://am-packaging-iota.vercel.app (deploys `main`). **Since 2026-11-16 it runs as the browser-saved demo** (listed in `LOCAL_DEPLOYMENTS`, `app/_lib/config.js`); this database is untouched while it is listed. Take it off the list to reconnect. |
 | Industry template | packaging-tape (their lists were seeded by hand before templates existed) |
 | Migrations applied | 0001 to 0010 |
 

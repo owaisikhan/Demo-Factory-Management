@@ -274,3 +274,11 @@ for the rules.
 - **Scope:** type: ads (kodexa-reels)
 - **Target in skill:** kodexa-reels references/quality-rules.md (Layout for ads) and posts-and-ads.md section 5
 - **Status:** logged
+
+### L-030 · 2026-11-16 · high · preference
+- **Said / saw:** "disconnect its database and fill in with sample data button on top from browser and every new entry saved in browser"; chose "save in each browser" over keeping the database
+- **Context:** a Next.js + Supabase dashboard whose rules live in Postgres, wanted as a public demo with no database
+- **Lesson:** For a no-database demo of a Postgres-rules app, run PGlite on the server with the real migrations, swap createClient() for a PostgREST-shaped stand-in, and keep each visitor's writes as a compressed op log in cookies replayed onto a cached starting point (deterministic local_uuid()/local_now() defaults so replays land on the same ids). No sample-array branches in the data layer, and the demo enforces every rule.
+- **Scope:** type: dashboard, ledger
+- **Target in skill:** references/types/dashboard.md (demo mode)
+- **Status:** logged

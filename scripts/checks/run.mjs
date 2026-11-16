@@ -12,9 +12,11 @@
 // abort POSTs with page.route (see SKILL.md section 5). Exit code 1 on failure.
 
 import { createHash } from "node:crypto";
+import { deflateRawSync } from "node:zlib";
 import { chromium } from "playwright";
 
 // One module per bug that shipped or nearly did, registered below.
+import { resolvePages } from "./pages.mjs";
 import pagesRender from "./pages-render.mjs";
 import overflow from "./overflow.mjs";
 import figures from "./figures.mjs";
@@ -63,10 +65,19 @@ const DEMO = {
   password: process.env.DEMO_LOGIN_PASSWORD || "12341234",
 };
 const demoCookie = createHash("sha256").update(`${DEMO.email}:${DEMO.password}:factory-demo`).digest("hex");
+// ...and with the sample data loaded, as if "Fill with sample data" had been
+// pressed (app/_lib/local-db/oplog.js keeps that in the fdb_ cookies).
+const sampleLog = deflateRawSync(Buffer.from(JSON.stringify({ v: 1, id: "checks", base: "sample", ops: [] }))).toString("base64url");
 const rawNewContext = browser.newContext.bind(browser);
 browser.newContext = async ({ signedOut, ...options } = {}) => {
   const context = await rawNewContext(options);
-  if (!signedOut) await context.addCookies([{ name: "factory_demo_session", value: demoCookie, url: BASE }]);
+  if (!signedOut) {
+    await context.addCookies([
+      { name: "factory_demo_session", value: demoCookie, url: BASE },
+      { name: "fdb_0", value: sampleLog, url: BASE },
+      { name: "fdb_n", value: "1", url: BASE },
+    ]);
+  }
   return context;
 };
 browser.newPage = async (options = {}) => {
@@ -89,6 +100,8 @@ const ctx = {
     console.log(`  ${passed ? "ok  " : "FAIL"} ${label}${detail ? `  (${detail})` : ""}`);
   },
 };
+
+await resolvePages(BASE, browser);
 
 for (const name of only) {
   if (!ALL[name]) {

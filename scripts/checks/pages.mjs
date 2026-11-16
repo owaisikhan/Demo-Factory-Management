@@ -1,28 +1,31 @@
-// The pages every check walks (demo mode ids). Keep in step with the app.
+// The pages every check walks, in the demo with sample data loaded. Keep in
+// step with the app. {item}, {sale} and the like are real records, found
+// from the list pages by resolvePages() before the checks run (record ids
+// come from the database, so they cannot be written here).
 export const PAGES = [
   "/admin",
   "/admin/guide",
   "/admin/guide?lang=ur",
   "/admin/stock",
-  "/admin/stock/i-t-46-72-40c",
+  "/admin/stock/{item}",
   "/admin/stock/adjust",
   "/admin/raw-materials",
   "/admin/raw-materials/new",
   "/admin/products",
   "/admin/production",
   "/admin/production/new",
-  "/admin/production/pr-11",
+  "/admin/production/{run}",
   "/admin/purchases",
   "/admin/purchases/new",
-  "/admin/purchases/pu-1",
+  "/admin/purchases/{purchase}",
   "/admin/sales",
   "/admin/sales/new",
-  "/admin/sales/sa-16",
+  "/admin/sales/{sale}",
   "/admin/customers",
   "/admin/customers/new",
-  "/admin/customers/cus-ftl",
+  "/admin/customers/{customer}",
   "/admin/suppliers",
-  "/admin/suppliers/sup-lfc",
+  "/admin/suppliers/{supplier}",
   "/admin/activity",
   "/admin/users",
   "/admin/settings",
@@ -34,9 +37,9 @@ export const PAGES = [
   "/admin/settings?tab=colors",
   "/admin/settings?tab=units",
   "/admin/settings?tab=recipes",
-  "/admin/users/demo-w1",
-  "/admin/customers/cus-ftl/edit",
-  "/admin/suppliers/sup-lfc/edit",
+  "/admin/users/{user}",
+  "/admin/customers/{customer}/edit",
+  "/admin/suppliers/{supplier}/edit",
   "/admin/reports?tab=sales",
   "/admin/reports?tab=purchases",
   "/admin/reports?tab=production",
@@ -85,4 +88,30 @@ export async function eachPage(context, base, paths, fn, concurrency = 4) {
     }),
   );
   return found;
+}
+
+// Where each placeholder's record is found: the first matching link on a list page.
+const RECORDS = {
+  item: ["/admin/stock", /^\/admin\/stock\/[0-9a-f-]{36}$/],
+  run: ["/admin/production?status=over", /^\/admin\/production\/[0-9a-f-]{36}$/],
+  purchase: ["/admin/purchases", /^\/admin\/purchases\/[0-9a-f-]{36}$/],
+  sale: ["/admin/sales", /^\/admin\/sales\/[0-9a-f-]{36}$/],
+  customer: ["/admin/customers", /^\/admin\/customers\/[0-9a-f-]{36}$/],
+  supplier: ["/admin/suppliers", /^\/admin\/suppliers\/[0-9a-f-]{36}$/],
+  user: ["/admin/users", /^\/admin\/users\/[0-9a-f-]{36}$/],
+};
+export const RECORD = {};
+
+/** Fills in the {placeholders} in PAGES (in place) and RECORD. */
+export async function resolvePages(base, browser) {
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  for (const [key, [list, pattern]] of Object.entries(RECORDS)) {
+    await open(page, base, list);
+    const hrefs = await page.locator("main a[href]").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
+    const href = hrefs.find((h) => pattern.test(h));
+    if (!href) throw new Error(`No ${key} record found on ${list}. Is the sample data loaded?`);
+    RECORD[key] = href.split("/").pop();
+  }
+  await page.close();
+  for (let i = 0; i < PAGES.length; i++) PAGES[i] = PAGES[i].replace(/\{(\w+)\}/g, (_, k) => RECORD[k]);
 }

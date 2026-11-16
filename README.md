@@ -78,12 +78,18 @@ RLS, password sign-in), Vercel. Each client's Supabase project is in Mumbai
 
 ```bash
 npm install
-npm run dev          # with no .env.local: demo mode on sample data (a tape factory)
+npm run dev          # with no .env.local: the browser-saved demo
 DEMO_ROLE=worker npm run dev   # the demo as a worker sees it
 ```
 
-The demo is also the sales demo: deploy it with no env vars and it opens on
-sample data with saving switched off.
+With no database configured the app is a demo that saves each visitor's
+entries in their own browser: sign in with test@gmail.com / 12341234, then
+use **Fill with sample data** (a month of a tape factory's stock,
+production, purchases and sales) or start empty. Every rule works as on a
+real database, because the demo runs the same migrations on PGlite
+(Postgres as WebAssembly) inside the app (`app/_lib/local-db/`). Deploy it
+with no env vars for a sales demo, or list a deployment in
+`app/_lib/config.js` to switch it to the demo without touching its database.
 
 To run against a client's database locally, copy `.env.example` to
 `.env.local` with that client's URL, anon key and service-role key. Prefer a
