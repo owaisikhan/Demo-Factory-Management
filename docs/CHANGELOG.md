@@ -1,5 +1,17 @@
 # Changelog
 
+## 2026-11-16: Demo always up to date
+
+- The demo's sample data now ends on today's date (every date moves with
+  the calendar) and has four weeks of daily invoices, production runs and
+  purchases, two more customers and their payments. The dashboard, reports
+  and the sales demo no longer show empty charts once the written dates
+  pass. The charts check no longer pins dates.
+- Bugs the fuller data showed: page-number buttons were 40px on phones
+  (now 44px); Production's "Made this month" ran out of its card with three
+  units (now wraps between units); a report total in crore ran out of its
+  card at 320px (report cards go one per row below 400px).
+
 ## 2026-11-12: One-client app becomes a product
 
 - The repo is now the master copy of a factory management product

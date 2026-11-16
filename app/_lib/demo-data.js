@@ -2,6 +2,47 @@
 // the rows the real queries return, so the same components render both.
 // Never used once NEXT_PUBLIC_SUPABASE_URL is set.
 
+import { addDays, daysBetween, todayISO } from "./date-helpers";
+
+// The sample data was written around 3 Oct 2026. Every date is moved by the
+// same number of days so the last day of data is always today: the
+// dashboard, reports and the sales demo never look empty.
+const ANCHOR = "2026-10-03";
+const SHIFT = daysBetween(ANCHOR, todayISO());
+function D(iso) {
+  return addDays(iso, SHIFT);
+}
+function T(ts) {
+  return `${D(ts.slice(0, 10))}${ts.slice(10)}`;
+}
+
+// A small seeded random generator, so the generated days are the same on
+// every render (no flicker between pages).
+function seeded(seed) {
+  let a = seed;
+  return () => {
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const rnd = seeded(20261003);
+const pick = (arr) => arr[Math.floor(rnd() * arr.length)];
+const between = (lo, hi, step = 1) => lo + Math.floor(rnd() * ((hi - lo) / step + 1)) * step;
+// The generated days: the four weeks before today, Sundays off.
+const WORK_DAYS = Array.from({ length: 27 }, (_, i) => addDays(todayISO(), -27 + i)).filter(
+  (d) => new Date(`${d}T12:00:00Z`).getUTCDay() !== 0,
+);
+function renumber(rows, dateKey, noKey, prefix) {
+  rows
+    .slice()
+    .sort((a, b) => a[dateKey].localeCompare(b[dateKey]) || (a.at ?? "").localeCompare(b.at ?? ""))
+    .forEach((r, i) => {
+      r[noKey] = `${prefix}${String(i + 1).padStart(5, "0")}`;
+    });
+}
+
 export const demoProfile = {
   id: "demo-admin",
   full_name: "Imran Saeed",
@@ -12,11 +53,11 @@ export const demoProfile = {
 };
 
 export const demoProfiles = [
-  { id: "demo-admin", full_name: "Imran Saeed", role: "admin", active: true, permissions: ["stock_view", "purchases", "production", "sales", "sales_cash", "customers", "suppliers", "balances", "payments", "reports", "void"], email: "admin@demo.pk", created_at: "2026-09-01T05:00:00Z" },
-  { id: "demo-admin-2", full_name: "Usman Ahmed", role: "admin", active: true, permissions: ["stock_view", "purchases", "production", "sales", "sales_cash", "customers", "suppliers", "balances", "payments", "reports", "void"], email: "usman@demo.pk", created_at: "2026-09-01T05:10:00Z" },
-  { id: "demo-w1", full_name: "Ali Raza", role: "worker", active: true, permissions: ["stock_view", "purchases", "production", "sales", "sales_cash", "customers", "suppliers"], email: "ali@demo.pk", created_at: "2026-09-02T06:00:00Z" },
-  { id: "demo-w2", full_name: "Muhammad Bilal Hussain", role: "worker", active: true, permissions: ["stock_view", "production"], email: "bilal@demo.pk", created_at: "2026-09-02T06:05:00Z" },
-  { id: "demo-w3", full_name: "Imran Khan", role: "worker", active: false, permissions: ["stock_view", "purchases", "production", "sales", "sales_cash", "customers", "suppliers"], email: "imran@demo.pk", created_at: "2026-09-03T06:00:00Z" },
+  { id: "demo-admin", full_name: "Imran Saeed", role: "admin", active: true, permissions: ["stock_view", "purchases", "production", "sales", "sales_cash", "customers", "suppliers", "balances", "payments", "reports", "void"], email: "admin@demo.pk", created_at: T("2026-09-01T05:00:00Z") },
+  { id: "demo-admin-2", full_name: "Usman Ahmed", role: "admin", active: true, permissions: ["stock_view", "purchases", "production", "sales", "sales_cash", "customers", "suppliers", "balances", "payments", "reports", "void"], email: "usman@demo.pk", created_at: T("2026-09-01T05:10:00Z") },
+  { id: "demo-w1", full_name: "Ali Raza", role: "worker", active: true, permissions: ["stock_view", "purchases", "production", "sales", "sales_cash", "customers", "suppliers"], email: "ali@demo.pk", created_at: T("2026-09-02T06:00:00Z") },
+  { id: "demo-w2", full_name: "Muhammad Bilal Hussain", role: "worker", active: true, permissions: ["stock_view", "production"], email: "bilal@demo.pk", created_at: T("2026-09-02T06:05:00Z") },
+  { id: "demo-w3", full_name: "Imran Khan", role: "worker", active: false, permissions: ["stock_view", "purchases", "production", "sales", "sales_cash", "customers", "suppliers"], email: "imran@demo.pk", created_at: T("2026-09-03T06:00:00Z") },
 ];
 
 export const demoCategories = [
@@ -75,7 +116,7 @@ function item(row) {
   return {
     code: null, brand_id: null, brand_name: null, size_id: null, size_label: null,
     micron_id: null, micron_value: null, color_id: null, color_name: null,
-    rolls_per_carton: null, default_rate: 0, active: true, created_at: "2026-09-05T06:00:00Z",
+    rolls_per_carton: null, default_rate: 0, active: true, created_at: T("2026-09-05T06:00:00Z"),
     ...row,
     stock_status: status,
   };
@@ -140,27 +181,27 @@ export const demoSettings = {
 };
 
 export const demoMovements = [
-  { id: 9, movement_date: "2026-10-03", qty: 24, type: "production_in", note: "PRD-00012", ref_table: "production_runs", ref_id: "pr-12", created_at: "2026-10-03T07:20:00Z", actor_name: "Ali Raza" },
-  { id: 8, movement_date: "2026-10-02", qty: 60, type: "production_in", note: "PRD-00011", ref_table: "production_runs", ref_id: "pr-11", created_at: "2026-10-02T12:05:00Z", actor_name: "Muhammad Bilal Hussain" },
-  { id: 7, movement_date: "2026-10-01", qty: -2, type: "adjustment", note: "Two cartons water damaged", created_at: "2026-10-01T09:00:00Z", actor_name: "Imran Saeed" },
-  { id: 6, movement_date: "2026-09-30", qty: -100, type: "sale", note: "INV-00016", created_at: "2026-09-30T10:00:00Z", actor_name: "Ali Raza" },
-  { id: 5, movement_date: "2026-09-29", qty: -40, type: "sale", note: "INV-00015", created_at: "2026-09-29T11:00:00Z", actor_name: "Ali Raza" },
-  { id: 1, movement_date: "2026-09-05", qty: 272, type: "opening", note: "Counted on day one", created_at: "2026-09-05T06:00:00Z", actor_name: "Imran Saeed" },
+  { id: 9, movement_date: D("2026-10-03"), qty: 24, type: "production_in", note: "PRD-00012", ref_table: "production_runs", ref_id: "pr-12", created_at: T("2026-10-03T07:20:00Z"), actor_name: "Ali Raza" },
+  { id: 8, movement_date: D("2026-10-02"), qty: 60, type: "production_in", note: "PRD-00011", ref_table: "production_runs", ref_id: "pr-11", created_at: T("2026-10-02T12:05:00Z"), actor_name: "Muhammad Bilal Hussain" },
+  { id: 7, movement_date: D("2026-10-01"), qty: -2, type: "adjustment", note: "Two cartons water damaged", created_at: T("2026-10-01T09:00:00Z"), actor_name: "Imran Saeed" },
+  { id: 6, movement_date: D("2026-09-30"), qty: -100, type: "sale", note: "INV-00016", ref_table: "sales", ref_id: "sa-16", created_at: T("2026-09-30T10:00:00Z"), actor_name: "Ali Raza" },
+  { id: 5, movement_date: D("2026-09-29"), qty: -40, type: "sale", note: "INV-00015", ref_table: "sales", ref_id: "sa-15", created_at: T("2026-09-29T11:00:00Z"), actor_name: "Ali Raza" },
+  { id: 1, movement_date: D("2026-09-05"), qty: 272, type: "opening", note: "Counted on day one", created_at: T("2026-09-05T06:00:00Z"), actor_name: "Imran Saeed" },
 ];
 
 export const demoActivity = [
-  { id: 412, created_at: "2026-10-03T07:20:00Z", user_id: "demo-w1", actor_name: "Ali Raza", action: "created", module: "sale", record_id: "sa-18", record_label: "INV-00018", summary: "Ali Raza created invoice INV-00018 for Faisalabad Traders (Pvt) Ltd (Rs 1,152,000)", changes: { after: { invoice_no: "INV-00018", total: 1152000, sale_date: "2026-10-03", status: "posted" } } },
-  { id: 411, created_at: "2026-10-03T07:20:30Z", user_id: "demo-w1", actor_name: "Ali Raza", action: "payment", module: "payment", record_id: "p31", record_label: "Rs 500,000", summary: "Ali Raza recorded a payment of Rs 500,000 received from Faisalabad Traders (Pvt) Ltd", changes: { after: { amount: 500000, method: "bank" } } },
-  { id: 410, created_at: "2026-10-03T05:02:00Z", user_id: "demo-w1", actor_name: "Ali Raza", action: "login", module: "session", record_id: "demo-w1", record_label: "Ali Raza", summary: "Ali Raza signed in", changes: null },
-  { id: 409, created_at: "2026-10-02T12:05:00Z", user_id: "demo-w2", actor_name: "Muhammad Bilal Hussain", action: "created", module: "production", record_id: "pr-11", record_label: "PRD-00011", summary: "Muhammad Bilal Hussain created production run PRD-00011: 60 x Tape 46mm x 72yd 40 mic Clear", changes: { after: { run_no: "PRD-00011", qty_made: 60, run_date: "2026-10-02" } } },
-  { id: 408, created_at: "2026-10-02T09:40:00Z", user_id: "demo-admin", actor_name: "Imran Saeed", action: "updated", module: "item", record_id: "i-t-46-72-40c", record_label: "Tape 46mm x 72yd 40 mic Clear", summary: "Imran Saeed updated item Tape 46mm x 72yd 40 mic Clear", changes: { default_rate: { from: 4650, to: 4800 }, low_stock_level: { from: 40, to: 50 } } },
-  { id: 407, created_at: "2026-10-01T09:00:00Z", user_id: "demo-admin", actor_name: "Imran Saeed", action: "adjusted", module: "stock", record_id: "7", record_label: "Tape 46mm x 72yd 40 mic Clear (ctn)", summary: "Imran Saeed adjusted stock of Tape 46mm x 72yd 40 mic Clear (ctn) by -2 (reason: Two cartons water damaged)", changes: { after: { qty: -2, type: "adjustment", note: "Two cartons water damaged" } } },
-  { id: 406, created_at: "2026-09-30T14:30:00Z", user_id: "demo-admin", actor_name: "Imran Saeed", action: "voided", module: "purchase", record_id: "pu-6", record_label: "PUR-00006", summary: "Imran Saeed voided purchase PUR-00006 from Pak Box Industries (Pvt) Ltd (Rs 34,400), reason: Entered twice, see PUR-00007", changes: { status: { from: "posted", to: "void" }, void_reason: { from: "", to: "Entered twice, see PUR-00007" } } },
-  { id: 405, created_at: "2026-09-30T10:00:00Z", user_id: "demo-w1", actor_name: "Ali Raza", action: "created", module: "customer", record_id: "cus-gph", record_label: "Gujranwala Packaging House", summary: "Ali Raza created customer Gujranwala Packaging House", changes: { after: { name: "Gujranwala Packaging House", phone: "0300 1234567", opening_balance: 0 } } },
-  { id: 404, created_at: "2026-09-29T08:15:00Z", user_id: "demo-admin", actor_name: "Imran Saeed", action: "created", module: "recipe", record_id: "rc1", record_label: "Tape 46mm x 72yd 40 mic Clear", summary: "Imran Saeed created the recipe for Tape 46mm x 72yd 40 mic Clear (per unit: 1 pcs Carton Box 46mm, 300 m Jumbo Roll 40 micron Clear, 72 pcs Paper Tube 3 inch, 0.15 kg Shrink Film)", changes: { before: [], after: [{ material: "Carton Box 46mm", qty_per_unit: 1 }, { material: "Jumbo Roll 40 micron Clear", qty_per_unit: 300 }] } },
-  { id: 403, created_at: "2026-09-28T16:45:00Z", user_id: "demo-admin-2", actor_name: "Usman Ahmed", action: "deleted", module: "settings", record_id: "b-old", record_label: "Local Tubes", summary: "Usman Ahmed deleted brand Local Tubes", changes: { before: { name: "Local Tubes", active: true } } },
-  { id: 402, created_at: "2026-09-28T16:40:00Z", user_id: "demo-admin-2", actor_name: "Usman Ahmed", action: "created", module: "user", record_id: "demo-w3", record_label: "Imran Khan", summary: "Usman Ahmed created user Imran Khan as worker", changes: { after: { full_name: "Imran Khan", role: "worker", active: true } } },
-  { id: 401, created_at: "2026-09-28T16:00:00Z", user_id: "demo-admin-2", actor_name: "Usman Ahmed", action: "logout", module: "session", record_id: "demo-admin-2", record_label: "Usman Ahmed", summary: "Usman Ahmed signed out", changes: null },
+  { id: 412, created_at: T("2026-10-03T07:20:00Z"), user_id: "demo-w1", actor_name: "Ali Raza", action: "created", module: "sale", record_id: "sa-18", record_label: "INV-00018", summary: "Ali Raza created invoice INV-00018 for Faisalabad Traders (Pvt) Ltd (Rs 1,152,000)", changes: { after: { invoice_no: "INV-00018", total: 1152000, sale_date: D("2026-10-03"), status: "posted" } } },
+  { id: 411, created_at: T("2026-10-03T07:20:30Z"), user_id: "demo-w1", actor_name: "Ali Raza", action: "payment", module: "payment", record_id: "p31", record_label: "Rs 500,000", summary: "Ali Raza recorded a payment of Rs 500,000 received from Faisalabad Traders (Pvt) Ltd", changes: { after: { amount: 500000, method: "bank" } } },
+  { id: 410, created_at: T("2026-10-03T05:02:00Z"), user_id: "demo-w1", actor_name: "Ali Raza", action: "login", module: "session", record_id: "demo-w1", record_label: "Ali Raza", summary: "Ali Raza signed in", changes: null },
+  { id: 409, created_at: T("2026-10-02T12:05:00Z"), user_id: "demo-w2", actor_name: "Muhammad Bilal Hussain", action: "created", module: "production", record_id: "pr-11", record_label: "PRD-00011", summary: "Muhammad Bilal Hussain created production run PRD-00011: 60 x Tape 46mm x 72yd 40 mic Clear", changes: { after: { run_no: "PRD-00011", qty_made: 60, run_date: D("2026-10-02") } } },
+  { id: 408, created_at: T("2026-10-02T09:40:00Z"), user_id: "demo-admin", actor_name: "Imran Saeed", action: "updated", module: "item", record_id: "i-t-46-72-40c", record_label: "Tape 46mm x 72yd 40 mic Clear", summary: "Imran Saeed updated item Tape 46mm x 72yd 40 mic Clear", changes: { default_rate: { from: 4650, to: 4800 }, low_stock_level: { from: 40, to: 50 } } },
+  { id: 407, created_at: T("2026-10-01T09:00:00Z"), user_id: "demo-admin", actor_name: "Imran Saeed", action: "adjusted", module: "stock", record_id: "7", record_label: "Tape 46mm x 72yd 40 mic Clear (ctn)", summary: "Imran Saeed adjusted stock of Tape 46mm x 72yd 40 mic Clear (ctn) by -2 (reason: Two cartons water damaged)", changes: { after: { qty: -2, type: "adjustment", note: "Two cartons water damaged" } } },
+  { id: 406, created_at: T("2026-09-30T14:30:00Z"), user_id: "demo-admin", actor_name: "Imran Saeed", action: "voided", module: "purchase", record_id: "pu-6", record_label: "PUR-00006", summary: "Imran Saeed voided purchase PUR-00006 from Pak Box Industries (Pvt) Ltd (Rs 34,400), reason: Entered twice, see PUR-00007", changes: { status: { from: "posted", to: "void" }, void_reason: { from: "", to: "Entered twice, see PUR-00007" } } },
+  { id: 405, created_at: T("2026-09-30T10:00:00Z"), user_id: "demo-w1", actor_name: "Ali Raza", action: "created", module: "customer", record_id: "cus-gph", record_label: "Gujranwala Packaging House", summary: "Ali Raza created customer Gujranwala Packaging House", changes: { after: { name: "Gujranwala Packaging House", phone: "0300 1234567", opening_balance: 0 } } },
+  { id: 404, created_at: T("2026-09-29T08:15:00Z"), user_id: "demo-admin", actor_name: "Imran Saeed", action: "created", module: "recipe", record_id: "rc1", record_label: "Tape 46mm x 72yd 40 mic Clear", summary: "Imran Saeed created the recipe for Tape 46mm x 72yd 40 mic Clear (per unit: 1 pcs Carton Box 46mm, 300 m Jumbo Roll 40 micron Clear, 72 pcs Paper Tube 3 inch, 0.15 kg Shrink Film)", changes: { before: [], after: [{ material: "Carton Box 46mm", qty_per_unit: 1 }, { material: "Jumbo Roll 40 micron Clear", qty_per_unit: 300 }] } },
+  { id: 403, created_at: T("2026-09-28T16:45:00Z"), user_id: "demo-admin-2", actor_name: "Usman Ahmed", action: "deleted", module: "settings", record_id: "b-old", record_label: "Local Tubes", summary: "Usman Ahmed deleted brand Local Tubes", changes: { before: { name: "Local Tubes", active: true } } },
+  { id: 402, created_at: T("2026-09-28T16:40:00Z"), user_id: "demo-admin-2", actor_name: "Usman Ahmed", action: "created", module: "user", record_id: "demo-w3", record_label: "Imran Khan", summary: "Usman Ahmed created user Imran Khan as worker", changes: { after: { full_name: "Imran Khan", role: "worker", active: true } } },
+  { id: 401, created_at: T("2026-09-28T16:00:00Z"), user_id: "demo-admin-2", actor_name: "Usman Ahmed", action: "logout", module: "session", record_id: "demo-admin-2", record_label: "Usman Ahmed", summary: "Usman Ahmed signed out", changes: null },
 ];
 
 // ---------------------------------------------------------------
@@ -171,38 +212,62 @@ export const demoActivity = [
 const round2 = (n) => Math.round(n * 100) / 100;
 
 export const demoSuppliers = [
-  { id: "sup-lfc", name: "Lahore Films Co", contact_person: "Tariq Mehmood", phone: "0300 4412233", address: "Sundar Industrial Estate, Lahore", opening_balance: 0, notes: "Jumbo rolls, all microns", active: true, created_at: "2026-09-05T06:00:00Z" },
-  { id: "sup-star", name: "Star Tubes Faisalabad", contact_person: "Naveed Akhtar", phone: "0321 6655441", address: "Jhang Road, Faisalabad", opening_balance: 15000, notes: "", active: true, created_at: "2026-09-05T06:05:00Z" },
-  { id: "sup-pakbox", name: "Pak Box Industries (Pvt) Ltd", contact_person: "Shahid Iqbal", phone: "041 8721100", address: "Industrial Estate, Faisalabad", opening_balance: 0, notes: "Cartons 46mm and 72mm", active: true, created_at: "2026-09-06T06:00:00Z" },
-  { id: "sup-kpt", name: "Karachi Polymer Traders", contact_person: "", phone: "021 32455667", address: "SITE Area, Karachi", opening_balance: 0, notes: "", active: true, created_at: "2026-09-10T06:00:00Z" },
+  { id: "sup-lfc", name: "Lahore Films Co", contact_person: "Tariq Mehmood", phone: "0300 4412233", address: "Sundar Industrial Estate, Lahore", opening_balance: 0, notes: "Jumbo rolls, all microns", active: true, created_at: T("2026-09-05T06:00:00Z") },
+  { id: "sup-star", name: "Star Tubes Faisalabad", contact_person: "Naveed Akhtar", phone: "0321 6655441", address: "Jhang Road, Faisalabad", opening_balance: 15000, notes: "", active: true, created_at: T("2026-09-05T06:05:00Z") },
+  { id: "sup-pakbox", name: "Pak Box Industries (Pvt) Ltd", contact_person: "Shahid Iqbal", phone: "041 8721100", address: "Industrial Estate, Faisalabad", opening_balance: 0, notes: "Cartons 46mm and 72mm", active: true, created_at: T("2026-09-06T06:00:00Z") },
+  { id: "sup-kpt", name: "Karachi Polymer Traders", contact_person: "", phone: "021 32455667", address: "SITE Area, Karachi", opening_balance: 0, notes: "", active: true, created_at: T("2026-09-10T06:00:00Z") },
 ];
 
 const purchaseSeed = [
-  { id: "pu-1", purchase_no: "PUR-00001", supplier_id: "sup-lfc", purchase_date: "2026-09-08", supplier_ref: "LF-2291", discount: 0, gst_rate: 18, other_charges: 6500,
+  { id: "pu-1", purchase_no: "PUR-00001", supplier_id: "sup-lfc", purchase_date: D("2026-09-08"), supplier_ref: "LF-2291", discount: 0, gst_rate: 18, other_charges: 6500,
     lines: [{ item_id: "i-jr-40c", qty: 120000, rate: 9.4 }, { item_id: "i-jr-45b", qty: 40000, rate: 10.1 }] },
-  { id: "pu-2", purchase_no: "PUR-00002", supplier_id: "sup-star", purchase_date: "2026-09-12", supplier_ref: "", discount: 1500, gst_rate: 0, other_charges: 0,
+  { id: "pu-2", purchase_no: "PUR-00002", supplier_id: "sup-star", purchase_date: D("2026-09-12"), supplier_ref: "", discount: 1500, gst_rate: 0, other_charges: 0,
     lines: [{ item_id: "i-pt-star", qty: 15000, rate: 6 }] },
-  { id: "pu-3", purchase_no: "PUR-00003", supplier_id: "sup-pakbox", purchase_date: "2026-09-15", supplier_ref: "PB/0915", discount: 0, gst_rate: 0, other_charges: 2500,
+  { id: "pu-3", purchase_no: "PUR-00003", supplier_id: "sup-pakbox", purchase_date: D("2026-09-15"), supplier_ref: "PB/0915", discount: 0, gst_rate: 0, other_charges: 2500,
     lines: [{ item_id: "i-cb-46", qty: 800, rate: 85 }, { item_id: "i-cb-72", qty: 300, rate: 92 }] },
-  { id: "pu-4", purchase_no: "PUR-00004", supplier_id: "sup-kpt", purchase_date: "2026-09-20", supplier_ref: "KPT-118", discount: 0, gst_rate: 18, other_charges: 0,
+  { id: "pu-4", purchase_no: "PUR-00004", supplier_id: "sup-kpt", purchase_date: D("2026-09-20"), supplier_ref: "KPT-118", discount: 0, gst_rate: 18, other_charges: 0,
     lines: [{ item_id: "i-sf", qty: 400, rate: 540 }] },
-  { id: "pu-5", purchase_no: "PUR-00005", supplier_id: "sup-lfc", purchase_date: "2026-09-29", supplier_ref: "LF-2350", discount: 5000, gst_rate: 18, other_charges: 4500,
+  { id: "pu-5", purchase_no: "PUR-00005", supplier_id: "sup-lfc", purchase_date: D("2026-09-29"), supplier_ref: "LF-2350", discount: 5000, gst_rate: 18, other_charges: 4500,
     lines: [{ item_id: "i-jr-40c", qty: 90000, rate: 9.5 }] },
-  { id: "pu-6", purchase_no: "PUR-00006", supplier_id: "sup-pakbox", purchase_date: "2026-09-30", supplier_ref: "PB/0930", discount: 0, gst_rate: 0, other_charges: 0,
-    lines: [{ item_id: "i-cb-46", qty: 400, rate: 86 }], status: "void", void_reason: "Entered twice, see PUR-00007" },
-  { id: "pu-7", purchase_no: "PUR-00007", supplier_id: "sup-pakbox", purchase_date: "2026-10-01", supplier_ref: "PB/0930", discount: 0, gst_rate: 0, other_charges: 0,
+  { id: "pu-6", purchase_no: "PUR-00006", supplier_id: "sup-pakbox", purchase_date: D("2026-09-30"), supplier_ref: "PB/0930", discount: 0, gst_rate: 0, other_charges: 0,
+    lines: [{ item_id: "i-cb-46", qty: 400, rate: 86 }], status: "void", void_reason: "Entered twice, kept the second copy" },
+  { id: "pu-7", purchase_no: "PUR-00007", supplier_id: "sup-pakbox", purchase_date: D("2026-10-01"), supplier_ref: "PB/0930", discount: 0, gst_rate: 0, other_charges: 0,
     lines: [{ item_id: "i-cb-46", qty: 400, rate: 86 }] },
 ];
 
-export const demoSupplierPayments = [
-  { id: "sp-1", supplier_id: "sup-lfc", purchase_id: "pu-1", payment_date: "2026-09-08", amount: 500000, method: "bank", reference: "HBL TT 55120", note: "", status: "posted", void_reason: "", created_at: "2026-09-08T10:00:00Z" },
-  { id: "sp-2", supplier_id: "sup-lfc", purchase_id: "pu-1", payment_date: "2026-09-25", amount: 1314260, method: "cheque", reference: "Chq 004417", note: "", status: "posted", void_reason: "", created_at: "2026-09-25T10:00:00Z" },
-  { id: "sp-3", supplier_id: "sup-star", purchase_id: null, payment_date: "2026-09-14", amount: 15000, method: "cash", reference: "", note: "Old balance", status: "posted", void_reason: "", created_at: "2026-09-14T10:00:00Z" },
-  { id: "sp-4", supplier_id: "sup-star", purchase_id: "pu-2", payment_date: "2026-09-30", amount: 50000, method: "cash", reference: "", note: "", status: "posted", void_reason: "", created_at: "2026-09-30T10:00:00Z" },
-  { id: "sp-5", supplier_id: "sup-pakbox", purchase_id: "pu-3", payment_date: "2026-09-15", amount: 98100, method: "bank", reference: "MCB 7781", note: "", status: "posted", void_reason: "", created_at: "2026-09-15T10:00:00Z" },
-  { id: "sp-6", supplier_id: "sup-kpt", purchase_id: "pu-4", payment_date: "2026-09-21", amount: 100000, method: "online", reference: "IBFT 33019", note: "", status: "void", void_reason: "Sent to the wrong account, reversed by bank", created_at: "2026-09-21T10:00:00Z" },
-  { id: "sp-7", supplier_id: "sup-kpt", purchase_id: "pu-4", payment_date: "2026-09-22", amount: 100000, method: "online", reference: "IBFT 33102", note: "", status: "posted", void_reason: "", created_at: "2026-09-22T10:00:00Z" },
+// Generated: a purchase every few days, so the charts have a full month.
+const RAW_BUYS = [
+  { supplier_id: "sup-lfc", lines: () => [{ item_id: pick(["i-jr-40c", "i-jr-45b"]), qty: between(30000, 90000, 5000), rate: pick([9.4, 9.5, 9.6, 10.1]) }] },
+  { supplier_id: "sup-star", lines: () => [{ item_id: "i-pt-star", qty: between(4000, 12000, 1000), rate: 6 }] },
+  { supplier_id: "sup-pakbox", lines: () => [{ item_id: "i-cb-46", qty: between(200, 600, 50), rate: 86 }, { item_id: "i-cb-72", qty: between(50, 150, 25), rate: 92 }] },
+  { supplier_id: "sup-kpt", lines: () => [{ item_id: pick(["i-g-lldpe", "i-g-pp", "i-sf"]), qty: between(200, 800, 50), rate: pick([360, 395, 540]) }] },
 ];
+const genPurchases = [];
+WORK_DAYS.forEach((day, i) => {
+  if (i % 3 !== 1) return;
+  const b = pick(RAW_BUYS);
+  genPurchases.push({ id: `pu-g${i}`, purchase_no: "", supplier_id: b.supplier_id, purchase_date: day, supplier_ref: `B-${between(1000, 9999)}`, discount: 0, gst_rate: 0, other_charges: pick([0, 0, 1500, 2500]), lines: b.lines() });
+});
+genPurchases.push({ id: "pu-today", purchase_no: "", supplier_id: "sup-star", purchase_date: todayISO(), supplier_ref: "ST-8812", discount: 0, gst_rate: 0, other_charges: 0, lines: [{ item_id: "i-pt-star", qty: 6000, rate: 6 }] });
+purchaseSeed.push(...genPurchases);
+renumber(purchaseSeed, "purchase_date", "purchase_no", "PUR-");
+
+export const demoSupplierPayments = [
+  { id: "sp-1", supplier_id: "sup-lfc", purchase_id: "pu-1", payment_date: D("2026-09-08"), amount: 500000, method: "bank", reference: "HBL TT 55120", note: "", status: "posted", void_reason: "", created_at: T("2026-09-08T10:00:00Z") },
+  { id: "sp-2", supplier_id: "sup-lfc", purchase_id: "pu-1", payment_date: D("2026-09-25"), amount: 1314260, method: "cheque", reference: "Chq 004417", note: "", status: "posted", void_reason: "", created_at: T("2026-09-25T10:00:00Z") },
+  { id: "sp-3", supplier_id: "sup-star", purchase_id: null, payment_date: D("2026-09-14"), amount: 15000, method: "cash", reference: "", note: "Old balance", status: "posted", void_reason: "", created_at: T("2026-09-14T10:00:00Z") },
+  { id: "sp-4", supplier_id: "sup-star", purchase_id: "pu-2", payment_date: D("2026-09-30"), amount: 50000, method: "cash", reference: "", note: "", status: "posted", void_reason: "", created_at: T("2026-09-30T10:00:00Z") },
+  { id: "sp-5", supplier_id: "sup-pakbox", purchase_id: "pu-3", payment_date: D("2026-09-15"), amount: 98100, method: "bank", reference: "MCB 7781", note: "", status: "posted", void_reason: "", created_at: T("2026-09-15T10:00:00Z") },
+  { id: "sp-6", supplier_id: "sup-kpt", purchase_id: "pu-4", payment_date: D("2026-09-21"), amount: 100000, method: "online", reference: "IBFT 33019", note: "", status: "void", void_reason: "Sent to the wrong account, reversed by bank", created_at: T("2026-09-21T10:00:00Z") },
+  { id: "sp-7", supplier_id: "sup-kpt", purchase_id: "pu-4", payment_date: D("2026-09-22"), amount: 100000, method: "online", reference: "IBFT 33102", note: "", status: "posted", void_reason: "", created_at: T("2026-09-22T10:00:00Z") },
+];
+
+// Most generated bills are paid within a few days; the last week is still owed.
+genPurchases.forEach((p, i) => {
+  const due = p.lines.reduce((t, l) => t + Math.round(l.qty * l.rate), 0) + p.other_charges;
+  if (daysBetween(p.purchase_date, todayISO()) < 7) return;
+  demoSupplierPayments.push({ id: `sp-g${i}`, supplier_id: p.supplier_id, purchase_id: p.id, payment_date: addDays(p.purchase_date, 2), amount: due, method: pick(["bank", "cheque", "cash"]), reference: "", note: "", status: "posted", void_reason: "", created_at: `${addDays(p.purchase_date, 2)}T10:00:00Z` });
+});
 
 const itemById = (id) => demoItems.find((i) => i.id === id);
 
@@ -283,15 +348,33 @@ export const demoRecipes = {
 
 // actual: optional overrides of what was really used, by material
 const runSeed = [
-  { id: "pr-12", run_no: "PRD-00012", run_date: "2026-10-03", item_id: "i-t-46-72-40c", qty_made: 24, by: "Muhammad Bilal Hussain", at: "2026-10-03T08:10:00Z" },
-  { id: "pr-11", run_no: "PRD-00011", run_date: "2026-10-02", item_id: "i-t-46-72-40c", qty_made: 60, by: "Muhammad Bilal Hussain", at: "2026-10-02T12:05:00Z", actual: { "i-sf": 10.5, "i-pt-star": 4340 }, notes: "Two cores split on the slitter" },
-  { id: "pr-10", run_no: "PRD-00010", run_date: "2026-10-01", item_id: "i-sf-500", qty_made: 120, by: "Ali Raza", at: "2026-10-01T11:00:00Z", actual: { "i-g-lldpe": 318 } },
-  { id: "pr-09", run_no: "PRD-00009", run_date: "2026-09-29", item_id: "i-t-46-70-40b", qty_made: 40, by: "Ali Raza", at: "2026-09-29T11:00:00Z" },
-  { id: "pr-08", run_no: "PRD-00008", run_date: "2026-09-27", item_id: "i-ps-12", qty_made: 30, by: "Imran Khan", at: "2026-09-27T09:30:00Z" },
-  { id: "pr-07", run_no: "PRD-00007", run_date: "2026-09-26", item_id: "i-t-24-72-36c", qty_made: 15, by: "Ali Raza", at: "2026-09-26T10:00:00Z", status: "void", void_reason: "Wrong size picked, re-entered as PRD-00009" },
-  { id: "pr-06", run_no: "PRD-00006", run_date: "2026-09-24", item_id: "i-t-60-72-40p", qty_made: 20, by: "Muhammad Bilal Hussain", at: "2026-09-24T10:00:00Z",
+  { id: "pr-12", run_no: "PRD-00012", run_date: D("2026-10-03"), item_id: "i-t-46-72-40c", qty_made: 24, by: "Muhammad Bilal Hussain", at: T("2026-10-03T08:10:00Z") },
+  { id: "pr-11", run_no: "PRD-00011", run_date: D("2026-10-02"), item_id: "i-t-46-72-40c", qty_made: 60, by: "Muhammad Bilal Hussain", at: T("2026-10-02T12:05:00Z"), actual: { "i-sf": 10.5, "i-pt-star": 4340 }, notes: "Two cores split on the slitter" },
+  { id: "pr-10", run_no: "PRD-00010", run_date: D("2026-10-01"), item_id: "i-sf-500", qty_made: 120, by: "Ali Raza", at: T("2026-10-01T11:00:00Z"), actual: { "i-g-lldpe": 318 } },
+  { id: "pr-09", run_no: "PRD-00009", run_date: D("2026-09-29"), item_id: "i-t-46-70-40b", qty_made: 40, by: "Ali Raza", at: T("2026-09-29T11:00:00Z") },
+  { id: "pr-08", run_no: "PRD-00008", run_date: D("2026-09-27"), item_id: "i-ps-12", qty_made: 30, by: "Imran Khan", at: T("2026-09-27T09:30:00Z") },
+  { id: "pr-07", run_no: "PRD-00007", run_date: D("2026-09-26"), item_id: "i-t-24-72-36c", qty_made: 15, by: "Ali Raza", at: T("2026-09-26T10:00:00Z"), status: "void", void_reason: "Wrong size picked, entered again" },
+  { id: "pr-06", run_no: "PRD-00006", run_date: D("2026-09-24"), item_id: "i-t-60-72-40p", qty_made: 20, by: "Muhammad Bilal Hussain", at: T("2026-09-24T10:00:00Z"),
     manual: [{ raw_item_id: "i-jr-40c", qty: 3100 }, { raw_item_id: "i-pt-star", qty: 960 }, { raw_item_id: "i-cb-72", qty: 20 }] },
 ];
+
+// Generated: one or two runs on every working day.
+const RUNNERS = ["Ali Raza", "Muhammad Bilal Hussain", "Imran Khan"];
+const RUN_MIX = [
+  { item_id: "i-t-46-72-40c", lo: 30, hi: 80 },
+  { item_id: "i-t-46-70-40b", lo: 20, hi: 50 },
+  { item_id: "i-t-24-72-36c", lo: 10, hi: 30 },
+  { item_id: "i-sf-500", lo: 40, hi: 120, step: 10 },
+  { item_id: "i-ps-12", lo: 10, hi: 30, step: 5 },
+];
+WORK_DAYS.forEach((day, i) => {
+  const n = rnd() < 0.4 ? 2 : 1;
+  for (let k = 0; k < n; k++) {
+    const m = k === 0 ? RUN_MIX[i % 2] : pick(RUN_MIX.slice(2));
+    runSeed.push({ id: `pr-g${i}-${k}`, run_no: "", run_date: day, item_id: m.item_id, qty_made: between(m.lo, m.hi, m.step ?? 1), by: pick(RUNNERS), at: `${day}T${k ? "12" : "07"}:30:00Z` });
+  }
+});
+renumber(runSeed, "run_date", "run_no", "PRD-");
 
 const r3 = (n) => Math.round(n * 1000) / 1000;
 
@@ -324,38 +407,83 @@ export const demoProductionRuns = runSeed.map((r) => {
 // Phase 4: customers, sales and payments received
 // ---------------------------------------------------------------
 export const demoCustomers = [
-  { id: "cus-ftl", name: "Faisalabad Traders (Pvt) Ltd", contact_person: "Haji Rafiq", phone: "0300 6612345", address: "Montgomery Bazaar, Faisalabad", ntn: "4211876-3", opening_balance: 25000, notes: "", active: true, created_at: "2026-09-05T06:00:00Z" },
-  { id: "cus-gph", name: "Gujranwala Packaging House", contact_person: "Asif Butt", phone: "0300 1234567", address: "GT Road, Gujranwala", ntn: "", opening_balance: 0, notes: "", active: true, created_at: "2026-09-30T10:00:00Z" },
-  { id: "cus-lsm", name: "Lahore Stationery Mart", contact_person: "", phone: "042 37221100", address: "Urdu Bazaar, Lahore", ntn: "", opening_balance: 0, notes: "Pays cash on delivery", active: true, created_at: "2026-09-06T06:00:00Z" },
-  { id: "cus-kce", name: "Karachi Courier Express", contact_person: "Saima Noor", phone: "021 34567890", address: "Shahrah-e-Faisal, Karachi", ntn: "7765432-1", opening_balance: 0, notes: "", active: true, created_at: "2026-09-07T06:00:00Z" },
-  { id: "cus-sex", name: "Sialkot Exporters", contact_person: "Bilal Cheema", phone: "0321 7788990", address: "Small Industries Estate, Sialkot", ntn: "", opening_balance: 12000, notes: "", active: true, created_at: "2026-09-08T06:00:00Z" },
+  { id: "cus-ftl", name: "Faisalabad Traders (Pvt) Ltd", contact_person: "Haji Rafiq", phone: "0300 6612345", address: "Montgomery Bazaar, Faisalabad", ntn: "4211876-3", opening_balance: 25000, notes: "", active: true, created_at: T("2026-09-05T06:00:00Z") },
+  { id: "cus-gph", name: "Gujranwala Packaging House", contact_person: "Asif Butt", phone: "0300 1234567", address: "GT Road, Gujranwala", ntn: "", opening_balance: 0, notes: "", active: true, created_at: T("2026-09-30T10:00:00Z") },
+  { id: "cus-lsm", name: "Lahore Stationery Mart", contact_person: "", phone: "042 37221100", address: "Urdu Bazaar, Lahore", ntn: "", opening_balance: 0, notes: "Pays cash on delivery", active: true, created_at: T("2026-09-06T06:00:00Z") },
+  { id: "cus-kce", name: "Karachi Courier Express", contact_person: "Saima Noor", phone: "021 34567890", address: "Shahrah-e-Faisal, Karachi", ntn: "7765432-1", opening_balance: 0, notes: "", active: true, created_at: T("2026-09-07T06:00:00Z") },
+  { id: "cus-sex", name: "Sialkot Exporters", contact_person: "Bilal Cheema", phone: "0321 7788990", address: "Small Industries Estate, Sialkot", ntn: "", opening_balance: 12000, notes: "", active: true, created_at: T("2026-09-08T06:00:00Z") },
+  { id: "cus-mch", name: "Multan Carton House", contact_person: "Rana Javed", phone: "0300 6334455", address: "Vehari Road, Multan", ntn: "", opening_balance: 0, notes: "", active: true, created_at: T("2026-09-05T06:00:00Z") },
+  { id: "cus-pwm", name: "Peshawar Wholesale Mart", contact_person: "Gul Khan", phone: "0315 9081122", address: "Karkhano Market, Peshawar", ntn: "", opening_balance: 0, notes: "", active: true, created_at: T("2026-09-05T06:00:00Z") },
 ];
 
 const saleSeed = [
-  { id: "sa-14", invoice_no: "INV-00014", customer_id: "cus-ftl", sale_date: "2026-09-12", due_date: null, discount: 0, gst_rate: 0, other_charges: 0,
+  { id: "sa-14", invoice_no: "INV-00014", customer_id: "cus-ftl", sale_date: D("2026-09-12"), due_date: null, discount: 0, gst_rate: 0, other_charges: 0,
     lines: [{ item_id: "i-t-46-72-40c", qty: 100, rate: 4650 }] },
-  { id: "sa-15", invoice_no: "INV-00015", customer_id: "cus-gph", sale_date: "2026-09-29", due_date: "2026-09-30", discount: 0, gst_rate: 0, other_charges: 1500,
+  { id: "sa-15", invoice_no: "INV-00015", customer_id: "cus-gph", sale_date: D("2026-09-29"), due_date: D("2026-09-30"), discount: 0, gst_rate: 0, other_charges: 1500,
     lines: [{ item_id: "i-t-46-70-40b", qty: 40, rate: 4650 }] },
-  { id: "sa-16", invoice_no: "INV-00016", customer_id: "cus-ftl", sale_date: "2026-09-30", due_date: "2026-10-30", discount: 5000, gst_rate: 18, other_charges: 0,
+  { id: "sa-16", invoice_no: "INV-00016", customer_id: "cus-ftl", sale_date: D("2026-09-30"), due_date: D("2026-10-30"), discount: 5000, gst_rate: 18, other_charges: 0,
     lines: [{ item_id: "i-t-46-72-40c", qty: 100, rate: 4750 }] },
-  { id: "sa-17", invoice_no: "INV-00017", customer_id: "cus-lsm", sale_date: "2026-10-01", due_date: null, discount: 0, gst_rate: 0, other_charges: 0,
+  { id: "sa-17", invoice_no: "INV-00017", customer_id: "cus-lsm", sale_date: D("2026-10-01"), due_date: null, discount: 0, gst_rate: 0, other_charges: 0,
     lines: [{ item_id: "i-sf-500", qty: 50, rate: 1350 }, { item_id: "i-ps-12", qty: 10, rate: 2250 }] },
-  { id: "sa-19", invoice_no: "INV-00019", customer_id: "cus-kce", sale_date: "2026-10-02", due_date: null, discount: 0, gst_rate: 0, other_charges: 0,
+  { id: "sa-19", invoice_no: "INV-00019", customer_id: "cus-kce", sale_date: D("2026-10-02"), due_date: null, discount: 0, gst_rate: 0, other_charges: 0,
     lines: [{ item_id: "i-t-24-72-36c", qty: 30, rate: 4200 }], status: "void", void_reason: "Order cancelled by phone" },
-  { id: "sa-18", invoice_no: "INV-00018", customer_id: "cus-ftl", sale_date: "2026-10-03", created_at: "2026-10-03T07:20:00Z", due_date: "2026-11-02", discount: 0, gst_rate: 0, other_charges: 0,
+  { id: "sa-18", invoice_no: "INV-00018", customer_id: "cus-ftl", sale_date: D("2026-10-03"), created_at: T("2026-10-03T07:20:00Z"), due_date: D("2026-11-02"), discount: 0, gst_rate: 0, other_charges: 0,
     lines: [{ item_id: "i-t-46-72-40c", qty: 240, rate: 4800 }] },
-  { id: "sa-20", invoice_no: "INV-00020", customer_id: "cus-sex", sale_date: "2026-10-03", due_date: "2026-10-17", discount: 2000, gst_rate: 0, other_charges: 0,
+  { id: "sa-20", invoice_no: "INV-00020", customer_id: "cus-sex", sale_date: D("2026-10-03"), due_date: D("2026-10-17"), discount: 2000, gst_rate: 0, other_charges: 0,
     lines: [{ item_id: "i-t-60-72-40p", qty: 12, rate: 5600 }] },
 ];
 
-export const demoCustomerPayments = [
-  { id: "cp-1", customer_id: "cus-ftl", sale_id: "sa-14", payment_date: "2026-09-12", amount: 465000, method: "bank", reference: "MCB 55190", note: "", status: "posted", void_reason: "", created_at: "2026-09-12T12:00:00Z", recorded_by: "Imran Saeed" },
-  { id: "cp-2", customer_id: "cus-ftl", sale_id: null, payment_date: "2026-09-20", amount: 25000, method: "cash", reference: "", note: "Old balance cleared", status: "posted", void_reason: "", created_at: "2026-09-20T12:00:00Z", recorded_by: "Imran Saeed" },
-  { id: "cp-3", customer_id: "cus-ftl", sale_id: "sa-16", payment_date: "2026-10-01", amount: 300000, method: "cheque", reference: "Chq 778812", note: "", status: "posted", void_reason: "", created_at: "2026-10-01T12:00:00Z", recorded_by: "Usman Ahmed" },
-  { id: "cp-4", customer_id: "cus-lsm", sale_id: "sa-17", payment_date: "2026-10-01", amount: 90000, method: "cash", reference: "", note: "", status: "posted", void_reason: "", created_at: "2026-10-01T13:00:00Z", recorded_by: "Ali Raza" },
-  { id: "cp-5", customer_id: "cus-ftl", sale_id: "sa-18", payment_date: "2026-10-03", amount: 500000, method: "bank", reference: "HBL 99021", note: "", status: "posted", void_reason: "", created_at: "2026-10-03T07:20:30Z", recorded_by: "Ali Raza" },
-  { id: "cp-6", customer_id: "cus-gph", sale_id: "sa-15", payment_date: "2026-09-30", amount: 50000, method: "cheque", reference: "Chq 1020", note: "", status: "void", void_reason: "Cheque bounced", created_at: "2026-09-30T15:00:00Z", recorded_by: "Imran Saeed" },
+// Generated: one to three invoices on every working day.
+const SALE_MIX = [
+  { item_id: "i-t-46-72-40c", lo: 20, hi: 120, step: 10, rates: [4750, 4800, 4850] },
+  { item_id: "i-t-46-70-40b", lo: 10, hi: 60, step: 10, rates: [4600, 4650] },
+  { item_id: "i-t-24-72-36c", lo: 10, hi: 40, step: 5, rates: [4150, 4200] },
+  { item_id: "i-t-60-72-40p", lo: 5, hi: 20, step: 5, rates: [5500, 5600] },
+  { item_id: "i-sf-500", lo: 20, hi: 80, step: 10, rates: [1325, 1350] },
+  { item_id: "i-ps-12", lo: 5, hi: 15, step: 5, rates: [2200, 2250] },
 ];
+const BUYERS = ["cus-ftl", "cus-gph", "cus-lsm", "cus-kce", "cus-sex", "cus-mch", "cus-pwm"];
+const genSales = [];
+WORK_DAYS.forEach((day, i) => {
+  const n = 1 + Math.floor(rnd() * 3);
+  for (let k = 0; k < n; k++) {
+    const lines = [pick(SALE_MIX)];
+    if (rnd() < 0.35) {
+      const extra = pick(SALE_MIX);
+      if (extra.item_id !== lines[0].item_id) lines.push(extra);
+    }
+    const credit = rnd() < 0.45;
+    genSales.push({
+      id: `sa-g${i}-${k}`, invoice_no: "", customer_id: pick(BUYERS), sale_date: day, at: `${day}T${String(6 + k * 3).padStart(2, "0")}:15:00Z`,
+      created_at: `${day}T${String(6 + k * 3).padStart(2, "0")}:15:00Z`, due_date: credit ? addDays(day, 30) : null,
+      discount: 0, gst_rate: 0, other_charges: 0,
+      lines: lines.map((m) => ({ item_id: m.item_id, qty: between(m.lo, m.hi, m.step), rate: pick(m.rates) })),
+    });
+  }
+});
+saleSeed.push(...genSales);
+saleSeed.forEach((s) => {
+  s.at = s.at ?? s.created_at ?? `${s.sale_date}T09:00:00Z`;
+});
+renumber(saleSeed, "sale_date", "invoice_no", "INV-");
+
+export const demoCustomerPayments = [
+  { id: "cp-1", customer_id: "cus-ftl", sale_id: "sa-14", payment_date: D("2026-09-12"), amount: 465000, method: "bank", reference: "MCB 55190", note: "", status: "posted", void_reason: "", created_at: T("2026-09-12T12:00:00Z"), recorded_by: "Imran Saeed" },
+  { id: "cp-2", customer_id: "cus-ftl", sale_id: null, payment_date: D("2026-09-20"), amount: 25000, method: "cash", reference: "", note: "Old balance cleared", status: "posted", void_reason: "", created_at: T("2026-09-20T12:00:00Z"), recorded_by: "Imran Saeed" },
+  { id: "cp-3", customer_id: "cus-ftl", sale_id: "sa-16", payment_date: D("2026-10-01"), amount: 300000, method: "cheque", reference: "Chq 778812", note: "", status: "posted", void_reason: "", created_at: T("2026-10-01T12:00:00Z"), recorded_by: "Usman Ahmed" },
+  { id: "cp-4", customer_id: "cus-lsm", sale_id: "sa-17", payment_date: D("2026-10-01"), amount: 90000, method: "cash", reference: "", note: "", status: "posted", void_reason: "", created_at: T("2026-10-01T13:00:00Z"), recorded_by: "Ali Raza" },
+  { id: "cp-5", customer_id: "cus-ftl", sale_id: "sa-18", payment_date: D("2026-10-03"), amount: 500000, method: "bank", reference: "HBL 99021", note: "", status: "posted", void_reason: "", created_at: T("2026-10-03T07:20:30Z"), recorded_by: "Ali Raza" },
+  { id: "cp-6", customer_id: "cus-gph", sale_id: "sa-15", payment_date: D("2026-09-30"), amount: 50000, method: "cheque", reference: "Chq 1020", note: "", status: "void", void_reason: "Cheque bounced", created_at: T("2026-09-30T15:00:00Z"), recorded_by: "Imran Saeed" },
+];
+
+// Cash invoices are paid on the day; most credit ones within two weeks.
+genSales.forEach((s, i) => {
+  const total = s.lines.reduce((t, l) => t + Math.round(l.qty * l.rate), 0);
+  const age = daysBetween(s.sale_date, todayISO());
+  if (s.due_date && (age < 12 || rnd() < 0.3)) return;
+  const day = s.due_date ? addDays(s.sale_date, Math.min(age, between(5, 14))) : s.sale_date;
+  demoCustomerPayments.push({ id: `cp-g${i}`, customer_id: s.customer_id, sale_id: s.id, payment_date: day, amount: total, method: s.due_date ? pick(["bank", "cheque"]) : "cash", reference: "", note: "", status: "posted", void_reason: "", created_at: `${day}T13:00:00Z`, recorded_by: pick(["Ali Raza", "Imran Saeed"]) });
+});
 
 export const demoSaleLines = saleSeed.flatMap((s) =>
   s.lines.map((l, i) => {
@@ -364,7 +492,7 @@ export const demoSaleLines = saleSeed.flatMap((s) =>
   }),
 );
 
-const TODAY = "2026-10-03";
+const TODAY = todayISO();
 
 export const demoSales = saleSeed.map((s) => {
   const subtotal = round2(s.lines.reduce((t, l) => t + round2(l.qty * l.rate), 0));
@@ -416,3 +544,12 @@ export function demoCustomerLedger(customerId, from, to) {
     return { ...r, balance: bal };
   });
 }
+
+// The document numbers were assigned after the generated days were added,
+// so the stock entries take theirs from the documents.
+demoMovements.forEach((m) => {
+  const doc =
+    m.ref_table === "production_runs" ? demoProductionRuns.find((r) => r.id === m.ref_id)?.run_no :
+    m.ref_table === "sales" ? demoSales.find((x) => x.id === m.ref_id)?.invoice_no : null;
+  if (doc) m.note = doc;
+});

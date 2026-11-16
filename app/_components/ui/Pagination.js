@@ -22,7 +22,7 @@ export default function Pagination({ page, perPage, total, basePath, params = {}
   const nums = [];
   for (let p = Math.max(1, current - 2); p <= Math.min(pages, current + 2); p += 1) nums.push(p);
 
-  const btn = "flex h-10 min-w-10 items-center justify-center rounded-lg border px-3 text-sm font-medium";
+  const btn = "flex h-11 min-w-11 items-center justify-center rounded-lg border px-3 text-sm font-medium";
 
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border px-4 py-4 sm:px-5">

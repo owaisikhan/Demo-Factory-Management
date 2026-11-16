@@ -157,7 +157,8 @@ export default async function ReportsPage({ searchParams }) {
         <ReportFilters key={`${tab.id}-${range.preset}`} tab={tab.id} presets={RANGE_PRESETS} range={range} />
       )}
 
-      <div className={clsx("grid grid-cols-2 gap-3 sm:gap-4", report.cards.length >= 3 && "xl:grid-cols-3")}>
+      {/* One per row on the narrowest phones: a month's total in crore does not fit half of 320px */}
+      <div className={clsx("grid grid-cols-2 gap-3 max-[400px]:grid-cols-1 sm:gap-4", report.cards.length >= 3 && "xl:grid-cols-3")}>
         {report.cards.map((c, i) => (
           <StatCard key={c.label} icon={CARD_ICONS[i % CARD_ICONS.length]} label={c.label} value={c.value} note={c.note} tone={c.tone} valueTone={c.plain ? "plain" : undefined} />
         ))}

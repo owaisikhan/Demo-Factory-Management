@@ -56,10 +56,11 @@ export default async function ProductionPage({ searchParams }) {
           </span>
           <div className="min-w-0">
             <p className="text-[12px] font-medium uppercase tracking-[0.04em] text-muted sm:text-[13px]">Made {period}</p>
-            <p className="text-[17px] font-bold leading-snug text-heading">
+            {/* Several units: each figure stays whole, the list wraps between them */}
+            <p className="flex flex-wrap gap-x-1 text-[17px] font-bold leading-snug text-heading">
               {totals.made.length
                 ? totals.made.map((m, i) => (
-                    <span key={m.unit} className="num">
+                    <span key={m.unit} className="num whitespace-nowrap">
                       {i > 0 ? <span className="font-medium text-muted"> + </span> : null}
                       {formatQty(m.qty)} <span className="text-sm font-semibold text-muted">{m.unit}</span>
                     </span>

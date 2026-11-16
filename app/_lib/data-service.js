@@ -7,6 +7,7 @@ import { itemFields } from "./item-fields";
 import { isDemoMode } from "./config";
 import * as demo from "./demo-data";
 import * as reports from "./demo-reports";
+import { todayISO } from "./date-helpers";
 
 // Every read query lives in this file. Server-only.
 // In demo mode (no database configured) the same functions answer from the
@@ -268,7 +269,7 @@ export async function getActivityPage(filters = {}) {
 export async function getActivityCounts(user) {
   if (isDemoMode) {
     const rows = demo.demoActivity.filter((r) => !user || r.user_id === user);
-    const today = "2026-10-03";
+    const today = todayISO();
     const todays = rows.filter((r) => r.created_at.slice(0, 10) === today);
     return {
       today: todays.length,

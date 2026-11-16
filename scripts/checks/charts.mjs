@@ -2,18 +2,9 @@
 // building phase 5: "Rs 10.5 lakh" wrapped onto two lines in a narrow axis.
 import { open, themedContext } from "./pages.mjs";
 
-// Reports open on the last 30 days, and the demo data is fixed in
-// September and October 2026, so the period-based tabs pin the demo's dates.
-// Without this the check failed from mid-November on, with no bug.
-const DEMO_RANGE = "range=custom&from=2026-09-01&to=2026-10-05";
-const CHART_PAGES = [
-  "/admin",
-  `/admin/reports?tab=sales&${DEMO_RANGE}`,
-  `/admin/reports?tab=production&${DEMO_RANGE}`,
-  `/admin/reports?tab=materials&${DEMO_RANGE}`,
-  `/admin/reports?tab=stock&${DEMO_RANGE}`,
-  `/admin/reports?tab=profit&${DEMO_RANGE}`,
-];
+// The demo data always ends today (demo-data.js moves every date), so the
+// default "last 30 days" period has data on every tab.
+const CHART_PAGES = ["/admin", "/admin/reports?tab=sales", "/admin/reports?tab=production", "/admin/reports?tab=materials", "/admin/reports?tab=stock", "/admin/reports?tab=profit"];
 
 export default async function charts({ base, browser, ok }) {
   for (const [w, theme] of [[1440, "light"], [390, "dark"]]) {
