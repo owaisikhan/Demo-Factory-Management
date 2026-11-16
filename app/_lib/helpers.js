@@ -1,6 +1,8 @@
 import "server-only";
 import { cache } from "react";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
+import { DEMO_COOKIE, demoSignedIn } from "./demo-auth";
 import { createClient } from "./supabase-server";
 import { isDemoMode, ROLES } from "./config";
 import { demoProfile, demoProfiles } from "./demo-data";
@@ -16,6 +18,7 @@ export const getCurrentUser = cache(async () => {
   // DEMO_ROLE=worker shows the demo as a worker sees it, for reviewing screens;
   // DEMO_ROLE=demo-w2 picks that demo profile (a worker with fewer permissions).
   if (isDemoMode) {
+    if (!(await demoSignedIn((await cookies()).get(DEMO_COOKIE)?.value))) return null;
     const pick = process.env.DEMO_ROLE;
     if (!pick || pick === "admin") return demoProfile;
     const found = demoProfiles.find((p) => (pick === "worker" ? p.role === "worker" : p.id === pick)) ?? demoProfile;

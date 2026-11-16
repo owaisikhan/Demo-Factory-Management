@@ -11,6 +11,7 @@
 // is passed, and that only against a build made WITHOUT the database env:
 // abort POSTs with page.route (see SKILL.md section 5). Exit code 1 on failure.
 
+import { createHash } from "node:crypto";
 import { chromium } from "playwright";
 
 // One module per bug that shipped or nearly did, registered below.
@@ -27,6 +28,7 @@ import print from "./print.mjs";
 import sameTab from "./same-tab.mjs";
 import dates from "./dates.mjs";
 import branding from "./branding.mjs";
+import demoLogin from "./demo-login.mjs";
 
 const args = Object.fromEntries(
   process.argv.slice(2).reduce((acc, a, i, all) => {
@@ -36,7 +38,7 @@ const args = Object.fromEntries(
 );
 
 const BASE = args.base || "http://localhost:3000";
-const ALL = { pages: pagesRender, overflow, figures, tables, contrast, "dark-selects": darkSelects, charts, taps, search, print, "same-tab": sameTab, dates, branding };
+const ALL = { pages: pagesRender, overflow, figures, tables, contrast, "dark-selects": darkSelects, charts, taps, search, print, "same-tab": sameTab, dates, branding, "demo-login": demoLogin };
 const only = typeof args.only === "string" ? args.only.split(",") : Object.keys(ALL);
 
 // In Claude Code on the web, Chromium is preinstalled at /opt/pw-browsers and
@@ -52,12 +54,34 @@ try {
 }
 
 const browser = await chromium.launch(launch);
+
+// The demo has a sign-in (app/_lib/demo-auth.js). Every check starts signed
+// in with the demo account's cookie, except contexts opened with
+// { signedOut: true } (the demo-login check).
+const DEMO = {
+  email: (process.env.DEMO_LOGIN_EMAIL || "test@gmail.com").trim().toLowerCase(),
+  password: process.env.DEMO_LOGIN_PASSWORD || "12341234",
+};
+const demoCookie = createHash("sha256").update(`${DEMO.email}:${DEMO.password}:factory-demo`).digest("hex");
+const rawNewContext = browser.newContext.bind(browser);
+browser.newContext = async ({ signedOut, ...options } = {}) => {
+  const context = await rawNewContext(options);
+  if (!signedOut) await context.addCookies([{ name: "factory_demo_session", value: demoCookie, url: BASE }]);
+  return context;
+};
+browser.newPage = async (options = {}) => {
+  const context = await browser.newContext(options);
+  const page = await context.newPage();
+  page.on("close", () => context.close().catch(() => {}));
+  return page;
+};
 let failures = 0;
 
 // Each check gets these and reports with ok(label, passed, detail).
 const ctx = {
   base: BASE,
   browser,
+  demo: DEMO,
   allowSubmit: Boolean(args["allow-submit"]),
   pages: typeof args.pages === "string" ? args.pages.split(",") : null,
   ok(label, passed, detail = "") {

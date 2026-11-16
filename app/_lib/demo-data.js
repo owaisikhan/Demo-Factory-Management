@@ -143,9 +143,9 @@ export const demoItems = [
 
 export const demoSettings = {
   id: 1,
-  company_name: "Demo Packaging Industries",
-  short_name: "Demo Packaging",
-  tagline: "Sample data for a tape factory",
+  company_name: "Demo Factory Management Software",
+  short_name: "Demo Factory",
+  tagline: "Sample data",
   address: "Plot 12, Industrial Estate, Faisalabad",
   phone: "+92 300 0000000",
   email: "",

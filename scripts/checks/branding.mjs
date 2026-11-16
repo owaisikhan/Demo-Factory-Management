@@ -5,8 +5,8 @@
 import { PAGES, eachPage, open } from "./pages.mjs";
 // Same values as demoSettings in app/_lib/demo-data.js
 const demoSettings = {
-  short_name: "Demo Packaging",
-  company_name: "Demo Packaging Industries",
+  short_name: "Demo Factory",
+  company_name: "Demo Factory Management Software",
   size_label: "Size",
   micron_label: "Micron",
   color_label: "Color / type",
@@ -22,9 +22,13 @@ export default async function branding({ base, browser, ok, pages }) {
   });
   ok("no page shows the first client's name", leaks.length === 0, leaks.join("; "));
 
+  // The sign-in page is only shown signed out (signed in, it goes to the dashboard)
+  const out = await browser.newContext({ signedOut: true });
+  const loginPage = await out.newPage();
+  await open(loginPage, base, "/login");
+  const login = await loginPage.locator("main").innerText();
+  await out.close();
   const page = await context.newPage();
-  await open(page, base, "/login");
-  const login = await page.locator("main").innerText();
   ok(
     "sign-in page shows the company name from settings",
     login.includes(demoSettings.short_name) && login.includes(demoSettings.company_name),

@@ -20,7 +20,7 @@ database.
 |---|---|
 | Supabase project ref | `cbdpijrrzjvkmyyhyubz` (Mumbai, ap-south-1), live since 2026-10-05 |
 | Retired project | `fqvmljwlwfjensumiqws` (Singapore). Never apply anything to it; pause it once the live site is confirmed |
-| Vercel project | fill in |
+| Vercel project | https://am-packaging-iota.vercel.app (deploys `main`) |
 | Industry template | packaging-tape (their lists were seeded by hand before templates existed) |
 | Migrations applied | 0001 to 0010 |
 
@@ -57,4 +57,7 @@ not in the code.
   record created. Migration 0010 applied (items, stock total, movements,
   activity count and size names checked identical before and after), then
   the product code went to `main`. test@gmail.com made the only admin;
-  admin@gmail.com switched off.
+  admin@gmail.com switched off. The site was renamed in Settings to
+  "Demo Factory" / "Sajid Awan Industries" (generic address, no tagline), so
+  it no longer shows the AM Packaging name; test@gmail.com's password set to
+  the demo password.

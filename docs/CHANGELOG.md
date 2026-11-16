@@ -1,5 +1,17 @@
 # Changelog
 
+## 2026-11-16: Demo sign-in
+
+- A deployment with no database (the demo) now asks for one shared demo
+  account, test@gmail.com / 12341234 by default (`app/_lib/demo-auth.js`;
+  `DEMO_LOGIN_EMAIL`, `DEMO_LOGIN_PASSWORD`, or `DEMO_LOGIN=off`). A correct
+  sign-in keeps an httpOnly cookie for 30 days. Sites with a database are
+  unaffected. New check `scripts/checks/demo-login.mjs`; every other check
+  starts signed in.
+- After a wrong password the email stays filled in (React clears the form
+  after each submit; the action now returns it).
+- The demo company is "Demo Factory Management Software" ("Demo Factory").
+
 ## 2026-11-16: Demo always up to date
 
 - The demo's sample data now ends on today's date (every date moves with

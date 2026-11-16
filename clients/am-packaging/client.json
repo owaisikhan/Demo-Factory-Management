@@ -3,10 +3,10 @@
   "status": "live",
   "template": "packaging-tape",
   "company": {
-    "company_name": "Ahmed Munir Packaging Industry",
-    "short_name": "AM Packaging",
-    "tagline": "Your Trusted Packaging Partner",
-    "address": "265-D, Small Industrial Estate, Sargodha Road, Faisalabad",
+    "company_name": "Sajid Awan Industries",
+    "short_name": "Demo Factory",
+    "tagline": "",
+    "address": "Plot 12, Industrial Estate, Faisalabad",
     "phone": "",
     "email": "",
     "ntn": "",
@@ -31,7 +31,7 @@
   },
   "vercel": {
     "project": "",
-    "url": ""
+    "url": "https://am-packaging-iota.vercel.app"
   },
   "migrationsApplied": "0010",
   "plan": {

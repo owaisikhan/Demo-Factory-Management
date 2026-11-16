@@ -1,6 +1,7 @@
 import { Package2 } from "lucide-react";
 import { siteConfig } from "@/app/_lib/siteConfig";
 import { isDemoMode } from "@/app/_lib/config";
+import { demoLogin } from "@/app/_lib/demo-auth";
 import { getBranding } from "@/app/_lib/data-service";
 import LoginForm from "@/app/_components/admin/LoginForm";
 
@@ -26,7 +27,7 @@ export default async function LoginPage({ searchParams }) {
         <div className="px-6 py-9 sm:px-9">
           <h1 className="text-center text-2xl font-bold text-heading">Welcome back!</h1>
           <p className="mt-2 text-center text-sm text-muted">Sign in to {brand.company_name}.</p>
-          <LoginForm next={next} demo={isDemoMode} />
+          <LoginForm next={next} demo={isDemoMode} demoNeedsLogin={Boolean(demoLogin())} />
           <p className="mt-7 border-t border-border pt-6 text-center text-sm text-muted">
             No account yet, or forgot your password? Ask an admin to set it up for you.
           </p>

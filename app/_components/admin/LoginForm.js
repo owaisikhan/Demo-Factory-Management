@@ -6,7 +6,8 @@ import { signIn } from "@/app/_lib/actions";
 import FormMessage from "@/app/_components/ui/FormMessage";
 import SubmitButton from "@/app/_components/ui/SubmitButton";
 
-export default function LoginForm({ next, demo }) {
+export default function LoginForm({ next, demo, demoNeedsLogin }) {
+  const optional = demo && !demoNeedsLogin;
   const [state, formAction] = useActionState(signIn, null);
   const [show, setShow] = useState(false);
 
@@ -17,7 +18,7 @@ export default function LoginForm({ next, demo }) {
         <label htmlFor="email" className="form-label">
           Email address
         </label>
-        <input id="email" name="email" type="email" autoComplete="username" required={!demo} placeholder="e.g. ali@yourcompany.pk" className="form-input" />
+        <input id="email" name="email" type="email" autoComplete="username" defaultValue={state?.email ?? ""} required={!optional} placeholder="e.g. ali@yourcompany.pk" className="form-input" />
       </div>
       <div>
         <label htmlFor="password" className="form-label">
@@ -29,7 +30,7 @@ export default function LoginForm({ next, demo }) {
             name="password"
             type={show ? "text" : "password"}
             autoComplete="current-password"
-            required={!demo}
+            required={!optional}
             className="form-input pr-12"
           />
           <button
@@ -48,7 +49,9 @@ export default function LoginForm({ next, demo }) {
       </SubmitButton>
       {demo ? (
         <p className="rounded-xl border border-[#b7e4cc] bg-primary-light px-4 py-3 text-center text-sm text-primary-ink dark:border-[#1d5c3e]">
-          Demo mode: no database is connected. Press Sign in to look around with sample data.
+          {demoNeedsLogin
+            ? "Demo with sample data. Sign in with the demo account you were given."
+            : "Demo mode: no database is connected. Press Sign in to look around with sample data."}
         </p>
       ) : null}
     </form>

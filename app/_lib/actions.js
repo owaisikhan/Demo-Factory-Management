@@ -8,6 +8,8 @@ import { can, requirePermission, requireRole, ROLES } from "./helpers";
 import { PERMISSION_KEYS } from "./permissions";
 import { ITEM_FIELD_KEYS } from "./item-fields";
 import { isDemoMode } from "./config";
+import { cookies } from "next/headers";
+import { DEMO_COOKIE, DEMO_COOKIE_DAYS, demoLogin, demoToken } from "./demo-auth";
 
 // Every write lives in this file. Each action returns { ok, message, ...extras }
 // so one <FormMessage> renders them all.
@@ -77,16 +79,35 @@ function permissionsFrom(formData) {
 // Sign in and out
 // ---------------------------------------------------------------
 export async function signIn(_prev, formData) {
-  if (isDemoMode) redirect("/admin");
-
   const email = text(formData, "email").toLowerCase();
   const password = text(formData, "password");
   const next = text(formData, "next");
-  if (!email || !password) return fail("Enter your email and password.");
+
+  if (isDemoMode) {
+    const login = demoLogin();
+    if (login) {
+      if (!email || !password) return { ...fail("Enter your email and password."), email };
+      if (email !== login.email || password !== login.password) {
+        return { ...fail("That email and password do not match the demo account. Check them and try again."), email };
+      }
+      (await cookies()).set(DEMO_COOKIE, await demoToken(login), {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production" && process.env.VERCEL === "1",
+        path: "/",
+        maxAge: DEMO_COOKIE_DAYS * 24 * 60 * 60,
+      });
+    }
+    redirect(next.startsWith("/admin") ? next : "/admin");
+  }
+
+  // The email comes back on a failure: React clears the form after each
+  // submit, and typing the email again after a wrong password is a chore.
+  if (!email || !password) return { ...fail("Enter your email and password."), email };
 
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) return fail("That email and password do not match. Check them and try again.");
+  if (error) return { ...fail("That email and password do not match. Check them and try again."), email };
 
   const { data: profile } = await supabase.from("profiles").select("active").eq("id", data.user.id).maybeSingle();
   if (!profile || !profile.active) {
@@ -99,6 +120,7 @@ export async function signIn(_prev, formData) {
 }
 
 export async function signOut() {
+  if (isDemoMode) (await cookies()).delete(DEMO_COOKIE);
   if (!isDemoMode) {
     const supabase = await createClient();
     await supabase.rpc("log_event", { p_action: "logout" });

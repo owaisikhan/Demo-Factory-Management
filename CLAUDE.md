@@ -92,7 +92,9 @@ chose (invenza-html.vercel.app); do not "fix" them. Text in green or red uses
   `app/_lib/demo-data.js` and saving is off. Keep demo rows shaped exactly like
   the real query rows (including the item-field columns on `demoSettings`).
   `DEMO_ROLE=worker` shows it as a worker. The demo is a fictional tape
-  factory ("Demo Packaging") and doubles as the sales demo.
+  factory ("Demo Factory Management Software"), signed in with test@gmail.com / 12341234
+  (`app/_lib/demo-auth.js`; `DEMO_LOGIN=off` turns the sign-in off), and doubles as
+  the sales demo.
 - Design language follows the reference site exactly: tokens and component
   classes in `app/_styles/globals.css`. Do not add features from the
   reference that the client did not ask for.
