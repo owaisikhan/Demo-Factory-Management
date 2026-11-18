@@ -6,6 +6,9 @@ import PageHeader from "@/app/_components/layout/PageHeader";
 import CompanySettingsForm from "@/app/_components/admin/CompanySettingsForm";
 import LookupManager from "@/app/_components/admin/LookupManager";
 import ItemFieldsForm from "@/app/_components/admin/ItemFieldsForm";
+import { ClearDataButton, FillSampleButton } from "@/app/_components/admin/DemoDataButtons";
+import { isDemoMode } from "@/app/_lib/config";
+import { readLog } from "@/app/_lib/local-db/oplog";
 import RecipeEditor from "@/app/_components/admin/RecipeEditor";
 
 export const metadata = { title: "Settings" };
@@ -23,6 +26,7 @@ function tabsFor(fields) {
     fields.color.enabled && { key: "colors", label: fields.color.label, table: "colors", lookup: "colors" },
     { key: "units", label: "Units", table: "units", lookup: "units" },
     { key: "recipes", label: "Recipes" },
+    isDemoMode && { key: "demo", label: "Demo data" },
   ].filter(Boolean);
 }
 
@@ -36,6 +40,36 @@ export default async function SettingsPage({ searchParams }) {
   let body;
   if (tab.key === "company") {
     body = <CompanySettingsForm settings={settings} />;
+  } else if (tab.key === "demo") {
+    const log = await readLog();
+    const entries = log.ops.length;
+    body = (
+      <div className="grid gap-6 xl:grid-cols-2">
+        <section className="card p-5 sm:p-6">
+          <h2 className="card-title border-b border-border pb-4">Data in this browser</h2>
+          <p className="mt-4 text-sm text-secondary">
+            This is a demo: everything is saved in this browser only, not online. Another phone or laptop has its own copy.
+          </p>
+          <p className="mt-3 text-sm font-medium text-heading">
+            {log.base === "sample" ? "Started from the sample data" : "Started empty"}
+            {entries ? `, plus ${entries} ${entries === 1 ? "entry" : "entries"} you made.` : ", nothing entered since."}
+          </p>
+          <div className="mt-5">
+            <FillSampleButton />
+          </div>
+        </section>
+        <section className="card border-[#fecaca] p-5 sm:p-6 dark:border-[#7f1d1d]">
+          <h2 className="card-title border-b border-border pb-4">Clear all data</h2>
+          <p className="mt-4 text-sm text-secondary">
+            Removes every item, invoice, purchase, production run, customer, supplier and user entered in this browser, and the
+            sample data. The app starts empty. This cannot be undone.
+          </p>
+          <div className="mt-5">
+            <ClearDataButton />
+          </div>
+        </section>
+      </div>
+    );
   } else if (tab.key === "fields") {
     body = <ItemFieldsForm settings={settings} />;
   } else if (tab.key === "recipes") {

@@ -13,6 +13,9 @@ import {
 import { formatCompactMoney, formatMoney, formatQty, formatQtyUnit } from "@/app/_lib/format-helpers";
 import { addDays, addMonths, todayISO } from "@/app/_lib/date-helpers";
 import { periodView } from "@/app/_lib/chart-data";
+import { isDemoMode } from "@/app/_lib/config";
+import { readLog } from "@/app/_lib/local-db/oplog";
+import { FillSampleButton } from "@/app/_components/admin/DemoDataButtons";
 import StockStatus from "@/app/_components/admin/StockStatus";
 import MoneyRow from "@/app/_components/ui/MoneyRow";
 import SalesPurchasesCard from "@/app/_components/dashboard/SalesPurchasesCard";
@@ -81,6 +84,9 @@ export default async function Dashboard({ searchParams }) {
   const isAdmin = can(user, "reports");
   const seesBalances = can(user, "balances");
   const { denied } = await searchParams;
+  // Demo mode: an empty browser gets a big "Fill with sample data" card
+  const log = isDemoMode ? await readLog() : null;
+  const demoEmpty = Boolean(log && log.base === "empty" && log.ops.length === 0);
   const today = todayISO();
   const from30 = addDays(today, -29);
 
@@ -139,6 +145,19 @@ export default async function Dashboard({ searchParams }) {
         </p>
       ) : null}
 
+      {demoEmpty && user.role === "admin" ? (
+        <section className="card flex flex-wrap items-center justify-between gap-4 border-2 border-dashed border-primary p-5 sm:p-6">
+          <div className="min-w-[220px] flex-1">
+            <h2 className="text-lg font-bold text-heading">Nothing entered yet</h2>
+            <p className="mt-1 text-sm text-secondary">
+              Fill the app with a month of sample stock, production, purchases and sales to see how it works, or start entering your own.
+              Everything stays in this browser.
+            </p>
+          </div>
+          <FillSampleButton />
+        </section>
+      ) : null}
+
       <section className="welcome-banner">
         <div className="relative z-10 flex items-start gap-4">
           <span className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-[14px] border border-white/20 bg-white/15">
@@ -165,6 +184,7 @@ export default async function Dashboard({ searchParams }) {
           <Link href="/admin/stock?status=low" className="inline-flex min-h-[40px] pointer-coarse:min-h-[44px] items-center gap-2 rounded-[10px] border border-white bg-white px-4 text-[13px] font-bold text-[#15803d] shadow-sm hover:-translate-y-px">
             <TriangleAlert size={15} aria-hidden /> Low stock
           </Link>
+          {isDemoMode && user.role === "admin" ? <FillSampleButton variant="banner" /> : null}
         </div>
       </section>
 

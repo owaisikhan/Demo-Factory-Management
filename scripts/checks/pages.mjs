@@ -37,6 +37,7 @@ export const PAGES = [
   "/admin/settings?tab=colors",
   "/admin/settings?tab=units",
   "/admin/settings?tab=recipes",
+  "/admin/settings?tab=demo",
   "/admin/users/{user}",
   "/admin/customers/{customer}/edit",
   "/admin/suppliers/{supplier}/edit",

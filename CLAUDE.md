@@ -96,8 +96,10 @@ chose (invenza-html.vercel.app); do not "fix" them. Text in green or red uses
   from the same migrations, so every rule still applies. `createClient()` and
   `createAdminClient()` return stand-ins with the same API, so
   `data-service.js` and `actions.js` have no demo branches. Each visitor starts
-  empty; the bar on top fills a month of sample data (`seed.js`, from
-  `demo-data.js` through the posting functions) or clears all. Their entries
+  empty. **Fill with sample data** (Dashboard: the welcome banner, and a card
+  while the browser is empty) loads a month of sample data (`seed.js`, from
+  `demo-data.js` through the posting functions); **Clear all data** is in
+  Settings > Demo data (`DemoDataButtons.js`). The blue bar on top only explains. Their entries
   are a compressed log in `fdb_` cookies (`oplog.js`, about 30 KB room),
   replayed onto a starting point after a cold start; ids and times replay
   identically (`local_uuid()`, `local_now()`). Sign in: test@gmail.com /

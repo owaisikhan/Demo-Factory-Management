@@ -8,9 +8,10 @@
   (`app/_lib/local-db/`). After a server restart the log is replayed, with the
   same record ids and times. Every rule (stock guard, numbering, voids,
   permissions, activity log) works as on a client database.
-- A bar on top: **Fill with sample data** (the month in `demo-data.js`,
-  entered through the posting functions) and **Clear all**. Visitors start
-  empty.
+- **Fill with sample data** (the month in `demo-data.js`, entered through
+  the posting functions) is on the Dashboard: in the welcome banner, and as a
+  card while the browser is empty. **Clear all data** is in Settings > Demo
+  data. Visitors start empty.
 - `data-service.js` lost its 53 sample-data branches and `demo-reports.js` is
   gone: in demo mode `createClient()` returns the local stand-in, so the same
   queries answer.
